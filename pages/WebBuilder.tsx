@@ -9,6 +9,7 @@ import PublicArticlesList from '../components/public/PublicArticlesList';
 import PublicGalleriesList from '../components/public/PublicGalleriesList';
 import PublicSponsors from '../components/public/PublicSponsors';
 import PublicPlayerStats from '../components/public/PublicPlayerStats';
+import PublicLiveStream from '../components/public/PublicLiveStream';
 
 interface WebBuilderProps {
   competitionId: string;
@@ -22,7 +23,8 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
   const defaultConfig: PublicConfig = {
     title: '', description: '', logoUrl: '', primaryColor: '#3B82F6', backgroundColor: '#F9FAFB',
     showSchedule: false, showRankings: false, showArticles: false, showGalleries: false,
-    showSponsors: false, showSponsorsInFooter: false, showPlayerStats: false, footerText: '', facebookUrl: '', twitterUrl: '', instagramUrl: ''
+    showSponsors: false, showSponsorsInFooter: false, showPlayerStats: false, showLiveStream: false, liveStreamUrl: '',
+    footerText: '', facebookUrl: '', twitterUrl: '', instagramUrl: ''
   };
 
   const [config, setConfig] = useState<PublicConfig>(defaultConfig);
@@ -106,6 +108,7 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
 
           <h2 className="text-xl font-semibold border-b pb-3 pt-4">Content Modules</h2>
             <div className="space-y-3">
+              <label className="flex items-center"><input type="checkbox" name="showLiveStream" checked={config.showLiveStream} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Live Stream Section</span></label>
               <label className="flex items-center"><input type="checkbox" name="showSchedule" checked={config.showSchedule} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Match Schedule</span></label>
               <label className="flex items-center"><input type="checkbox" name="showRankings" checked={config.showRankings} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Rankings Table</span></label>
               <label className="flex items-center"><input type="checkbox" name="showArticles" checked={config.showArticles} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show News Section</span></label>
@@ -113,6 +116,19 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
               <label className="flex items-center"><input type="checkbox" name="showPlayerStats" checked={config.showPlayerStats} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Player Statistics</span></label>
             </div>
             
+          <h2 className="text-xl font-semibold border-b pb-3 pt-4">Live Stream</h2>
+             <div>
+                <label className="block text-sm font-medium">YouTube URL</label>
+                <input 
+                    type="url" 
+                    name="liveStreamUrl" 
+                    value={config.liveStreamUrl} 
+                    onChange={handleInputChange} 
+                    className="mt-1 block w-full border rounded-md p-2"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                />
+            </div>
+
           <h2 className="text-xl font-semibold border-b pb-3 pt-4">Sponsors</h2>
             <div className="space-y-3">
               <label className="flex items-center"><input type="checkbox" name="showSponsors" checked={config.showSponsors} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Sponsors Section</span></label>
@@ -149,6 +165,7 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
                       <p className="mt-4 text-lg max-w-2xl mx-auto">{config.description}</p>
                   </div>
                   <div className="mt-10 w-full max-w-4xl space-y-12">
+                     {config.showLiveStream && <PublicLiveStream liveStreamUrl={config.liveStreamUrl} />}
                      {config.showArticles && <PublicArticlesList competitionId={competitionId} />}
                      {config.showGalleries && <PublicGalleriesList competitionId={competitionId} />}
                      {config.showSponsors && <PublicSponsors competitionId={competitionId} />}

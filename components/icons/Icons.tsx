@@ -178,3 +178,15 @@ export const ArrowTopRightOnSquareIcon: React.FC<React.SVGProps<SVGSVGElement>> 
         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-6.375M21 3v6.375" />
     </svg>
 );
+
+export const VideoCameraIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9A2.25 2.25 0 004.5 18.75z" />
+    </svg>
+);
+
+export const SignalIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5v-2.25a3.375 3.375 0 00-3.375-3.375h-1.5a3.375 3.375 0 00-3.375 3.375V19.5m-2.25-4.5v-2.25a6.75 6.75 0 016.75-6.75h1.5a6.75 6.75 0 016.75 6.75V15m-2.25-4.5h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75z" />
+    </svg>
+);

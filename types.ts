@@ -131,6 +131,8 @@ export interface PublicConfig {
   showSponsors?: boolean;
   showSponsorsInFooter?: boolean;
   showPlayerStats?: boolean;
+  showLiveStream?: boolean;
+  liveStreamUrl?: string;
   footerText?: string;
   facebookUrl?: string;
   twitterUrl?: string;
