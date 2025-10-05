@@ -63,13 +63,15 @@ const PublicArticlesList: React.FC<PublicArticlesListProps> = ({ competitionId }
                 className="w-full h-full"
               ></iframe>
             </div>
-            <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                    <VideoCameraIcon className="h-6 w-6 mr-3 text-red-500 animate-pulse"/>
-                    Live View: {mainLiveMatch.homeTeam.name} vs {mainLiveMatch.awayTeam.name}
-                </h3>
+            <div className="p-6 bg-red-600 text-white min-h-[136px] flex flex-col justify-between">
+                <div>
+                    <h3 className="text-xl font-bold flex items-start">
+                        <VideoCameraIcon className="h-6 w-6 mr-3 text-white animate-pulse flex-shrink-0 mt-1"/>
+                        <span className="line-clamp-2">Live View: {mainLiveMatch.homeTeam.name} vs {mainLiveMatch.awayTeam.name}</span>
+                    </h3>
+                </div>
                 {otherLiveMatches.length > 0 && (
-                    <a href={allLiveStreamsUrl} className="text-sm font-semibold text-blue-600 hover:underline mt-2 inline-block">
+                    <a href={allLiveStreamsUrl} className="text-sm font-semibold text-red-100 hover:text-white hover:underline self-start">
                         + {otherLiveMatches.length} more live stream{otherLiveMatches.length > 1 ? 's' : ''}
                     </a>
                 )}
@@ -80,9 +82,9 @@ const PublicArticlesList: React.FC<PublicArticlesListProps> = ({ competitionId }
         {publicArticles.map(article => (
           <a href={publicArticleUrl(article.id)} key={article.id} className="block bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300">
             <img src={article.featuredImageUrl} alt={article.title} className="h-48 w-full object-cover" />
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900">{article.title}</h3>
-              <p className="text-sm text-gray-500 mt-2">{new Date(article.createdAt).toLocaleDateString()}</p>
+            <div className="p-6 min-h-[136px] flex flex-col justify-between">
+              <h3 className="text-xl font-bold text-gray-900 line-clamp-2">{article.title}</h3>
+              <p className="text-sm text-gray-500">{new Date(article.createdAt).toLocaleDateString()}</p>
             </div>
           </a>
         ))}
