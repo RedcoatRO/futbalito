@@ -93,36 +93,6 @@ const initialSponsors: Sponsor[] = [
     { id: 'sp2', competitionId: '1', name: 'ProSport Gear', logoUrl: 'https://picsum.photos/seed/prosport/200/100', websiteUrl: 'https://example.com' },
 ];
 
-const initialCompetitions: Competition[] = [
-  { 
-    id: '1', name: 'Premier Mini-Football League', season: '2024 Autumn', logoUrl: 'https://picsum.photos/seed/premier-league/100', 
-    status: 'Ongoing', teamIds: ['t1', 't2', 't3', 't4'], format: 'league', twoLegged: true, defaultArenaId: 'a1',
-    isPublic: true,
-    publicConfig: {
-        title: 'Premier Mini-Football League Official Site',
-        description: 'Welcome to the official home of the PMFL. Follow all the action, results, and news here.',
-        logoUrl: 'https://picsum.photos/seed/premier-league/100',
-        primaryColor: '#3B82F6',
-        backgroundColor: '#F9FAFB',
-        showSchedule: true,
-        showRankings: true,
-        showArticles: true,
-        showGalleries: true,
-        showSponsors: true,
-        showSponsorsInFooter: true,
-        showPlayerStats: true,
-        showLiveStream: true,
-        liveStreamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        footerText: '© 2024 Premier Mini-Football League. All Rights Reserved.',
-        facebookUrl: 'https://facebook.com',
-        twitterUrl: 'https://twitter.com',
-        instagramUrl: 'https://instagram.com',
-    }
-  },
-  { id: '2', name: 'City Cup', season: '2024', logoUrl: 'https://picsum.photos/seed/city-cup/100', status: 'Completed', teamIds: [], format: 'cup', fullBracket: true, isPublic: true },
-  { id: '3', name: 'Summer Friendly Tournament', season: '2024 Summer', logoUrl: 'https://picsum.photos/seed/summer-friendly/100', status: 'Upcoming', teamIds: [], format: 'mixed', teamsPerGroup: 4, twoLegged: false, isPublic: false },
-];
-
 const initialMatches: Match[] = [
     {
         id: 'm1',
@@ -147,14 +117,46 @@ const initialMatches: Match[] = [
         awayTeam: initialTeams[3],
         homeScore: 0,
         awayScore: 0,
-        status: 'Not Started',
+        status: 'In Progress',
         date: '2024-10-26T19:00:00Z',
         stage: 'Round 1',
         arenaId: 'a1',
         field: 'Field 2',
         events: [],
+        liveStreamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     }
 ];
+
+const initialCompetitions: Competition[] = [
+  { 
+    id: '1', name: 'Premier Mini-Football League', season: '2024 Autumn', logoUrl: 'https://picsum.photos/seed/premier-league/100', 
+    status: 'Ongoing', teamIds: ['t1', 't2', 't3', 't4'], format: 'league', twoLegged: true, defaultArenaId: 'a1',
+    isPublic: true,
+    publicConfig: {
+        title: 'Premier Mini-Football League Official Site',
+        description: 'Welcome to the official home of the PMFL. Follow all the action, results, and news here.',
+        logoUrl: 'https://picsum.photos/seed/premier-league/100',
+        primaryColor: '#3B82F6',
+        backgroundColor: '#F9FAFB',
+        showSchedule: true,
+        showRankings: true,
+        showArticles: true,
+        showGalleries: true,
+        showSponsors: true,
+        showSponsorsInFooter: true,
+        showPlayerStats: true,
+        showLiveStream: true,
+        featuredLiveMatchIds: ['m2'],
+        footerText: '© 2024 Premier Mini-Football League. All Rights Reserved.',
+        facebookUrl: 'https://facebook.com',
+        twitterUrl: 'https://twitter.com',
+        instagramUrl: 'https://instagram.com',
+    }
+  },
+  { id: '2', name: 'City Cup', season: '2024', logoUrl: 'https://picsum.photos/seed/city-cup/100', status: 'Completed', teamIds: [], format: 'cup', fullBracket: true, isPublic: true },
+  { id: '3', name: 'Summer Friendly Tournament', season: '2024 Summer', logoUrl: 'https://picsum.photos/seed/summer-friendly/100', status: 'Upcoming', teamIds: [], format: 'mixed', teamsPerGroup: 4, twoLegged: false, isPublic: false },
+];
+
 
 const initialPortalConfig: PortalConfig = {
     title: 'Futbalito Competition Portal',
@@ -413,7 +415,7 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
                 showSponsorsInFooter: false,
                 showPlayerStats: false,
                 showLiveStream: false,
-                liveStreamUrl: '',
+                featuredLiveMatchIds: [],
                 footerText: '',
                 facebookUrl: '',
                 twitterUrl: '',

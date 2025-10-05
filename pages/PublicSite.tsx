@@ -7,7 +7,6 @@ import PublicArticlesList from '../components/public/PublicArticlesList';
 import PublicGalleriesList from '../components/public/PublicGalleriesList';
 import PublicSponsors from '../components/public/PublicSponsors';
 import PublicPlayerStats from '../components/public/PublicPlayerStats';
-import PublicLiveStream from '../components/public/PublicLiveStream';
 
 interface PublicSiteProps {
   competitionId: string;
@@ -31,12 +30,12 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
   const { title, description, logoUrl, primaryColor, backgroundColor, ...config } = competition.publicConfig;
   
   const navLinks = [
-    { name: 'Live', active: config.showLiveStream },
-    { name: 'News', active: config.showArticles },
-    { name: 'Galleries', active: config.showGalleries },
-    { name: 'Rankings', active: config.showRankings },
-    { name: 'Schedule', active: config.showSchedule },
-    { name: 'Stats', active: config.showPlayerStats },
+    { name: 'Live', active: config.showLiveStream, anchor: 'news' },
+    { name: 'News', active: config.showArticles, anchor: 'news' },
+    { name: 'Galleries', active: config.showGalleries, anchor: 'galleries' },
+    { name: 'Rankings', active: config.showRankings, anchor: 'rankings' },
+    { name: 'Schedule', active: config.showSchedule, anchor: 'schedule' },
+    { name: 'Stats', active: config.showPlayerStats, anchor: 'stats' },
   ].filter(link => link.active);
 
   return (
@@ -49,7 +48,7 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
             </div>
             <nav className="hidden md:flex space-x-6">
                 {navLinks.map(link => (
-                    <a key={link.name} href={`#${link.name.toLowerCase()}`} className="text-sm font-medium text-gray-600 hover:text-gray-900">{link.name}</a>
+                    <a key={link.name} href={`#${link.anchor}`} className="text-sm font-medium text-gray-600 hover:text-gray-900">{link.name}</a>
                 ))}
             </nav>
         </div>
@@ -61,7 +60,6 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
         </div>
         
         <div className="container mx-auto py-16 px-6 space-y-20">
-            {config.showLiveStream && <div id="live"><PublicLiveStream liveStreamUrl={config.liveStreamUrl} /></div>}
             {config.showArticles && <div id="news"><PublicArticlesList competitionId={competition.id} /></div>}
             {config.showGalleries && <div id="galleries"><PublicGalleriesList competitionId={competition.id} /></div>}
             {config.showSponsors && <div id="sponsors"><PublicSponsors competitionId={competition.id} /></div>}

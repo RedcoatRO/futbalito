@@ -132,7 +132,7 @@ export interface PublicConfig {
   showSponsorsInFooter?: boolean;
   showPlayerStats?: boolean;
   showLiveStream?: boolean;
-  liveStreamUrl?: string;
+  featuredLiveMatchIds?: string[];
   footerText?: string;
   facebookUrl?: string;
   twitterUrl?: string;
@@ -206,6 +206,7 @@ export interface Match {
     arenaId?: string;
     field?: string;
     events: MatchEvent[];
+    liveStreamUrl?: string;
 }
 
 export interface StandingsRow {

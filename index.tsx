@@ -5,6 +5,7 @@ import PublicSite from './pages/PublicSite';
 import PublicArticleDetail from './pages/PublicArticleDetail';
 import PublicGalleryDetail from './pages/PublicGalleryDetail';
 import PublicPortalSite from './pages/PublicPortalSite';
+import PublicAllLiveStreams from './pages/PublicAllLiveStreams';
 import { CompetitionProvider } from './context/CompetitionContext';
 
 const rootElement = document.getElementById('root');
@@ -19,6 +20,7 @@ const publicCompetitionId = urlParams.get('publicCompetitionId');
 const publicArticleId = urlParams.get('articleId');
 const publicGalleryId = urlParams.get('galleryId');
 const isPortal = urlParams.get('portal') === 'true';
+const view = urlParams.get('view');
 
 root.render(
   <React.StrictMode>
@@ -26,7 +28,9 @@ root.render(
       {isPortal ? (
         <PublicPortalSite />
       ) : publicCompetitionId ? (
-        publicArticleId ? (
+          view === 'live' ? (
+          <PublicAllLiveStreams competitionId={publicCompetitionId} />
+        ) : publicArticleId ? (
           <PublicArticleDetail competitionId={publicCompetitionId} articleId={publicArticleId} />
         ) : publicGalleryId ? (
           <PublicGalleryDetail competitionId={publicCompetitionId} galleryId={publicGalleryId} />

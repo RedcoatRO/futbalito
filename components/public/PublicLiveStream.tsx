@@ -1,11 +1,13 @@
 import React from 'react';
-import { VideoCameraIcon, SignalIcon } from '../icons/Icons';
+import { VideoCameraIcon } from '../icons/Icons';
+import type { Match } from '../../types';
 
 interface PublicLiveStreamProps {
-  liveStreamUrl?: string;
+  match: Match;
+  isFeatured?: boolean;
 }
 
-const PublicLiveStream: React.FC<PublicLiveStreamProps> = ({ liveStreamUrl }) => {
+const PublicLiveStream: React.FC<PublicLiveStreamProps> = ({ match }) => {
   const getEmbedUrl = (url: string | undefined): string | null => {
     if (!url) return null;
     try {
@@ -25,42 +27,31 @@ const PublicLiveStream: React.FC<PublicLiveStreamProps> = ({ liveStreamUrl }) =>
     return null;
   };
 
-  const embedUrl = getEmbedUrl(liveStreamUrl);
+  const embedUrl = getEmbedUrl(match.liveStreamUrl);
+
+  if (!embedUrl) {
+    return null; // Or a placeholder indicating stream issue
+  }
 
   return (
-    <section>
-      <h2 className="text-3xl font-bold text-center text-gray-800 mb-8 flex items-center justify-center">
-        <VideoCameraIcon className="h-8 w-8 mr-3 text-red-500" />
-        Live View
-      </h2>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        {embedUrl ? (
-          <div className="aspect-w-16 aspect-h-9">
-            <iframe
-              src={embedUrl}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
-          </div>
-        ) : (
-          <div className="aspect-w-16 aspect-h-9 flex flex-col items-center justify-center bg-gray-800 text-white p-8">
-            <div className="relative flex items-center justify-center">
-                <SignalIcon className="h-20 w-20 text-gray-600" />
-                <div className="absolute top-0 right-0 -mr-2 -mt-2 px-3 py-1 bg-red-600 text-white text-sm font-bold uppercase rounded-full shadow-lg animate-pulse">
-                    Live
-                </div>
-            </div>
-            <h3 className="mt-6 text-2xl font-bold tracking-tight">NO LIVE MATCH CURRENTLY</h3>
-            <p className="mt-2 text-gray-400 max-w-md text-center">
-                Check back here during game time to watch the action unfold!
-            </p>
-          </div>
-        )}
-      </div>
-    </section>
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="aspect-w-16 aspect-h-9">
+        <iframe
+            src={embedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+        ></iframe>
+        </div>
+        <div className="p-6">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                <VideoCameraIcon className="h-6 w-6 mr-3 text-red-500 animate-pulse" />
+                Live: {match.homeTeam.name} vs {match.awayTeam.name}
+            </h3>
+        </div>
+    </div>
   );
 };
 

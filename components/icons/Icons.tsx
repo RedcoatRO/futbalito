@@ -190,3 +190,9 @@ export const SignalIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5v-2.25a3.375 3.375 0 00-3.375-3.375h-1.5a3.375 3.375 0 00-3.375 3.375V19.5m-2.25-4.5v-2.25a6.75 6.75 0 016.75-6.75h1.5a6.75 6.75 0 016.75 6.75V15m-2.25-4.5h-1.5a.75.75 0 00-.75.75v4.5a.75.75 0 00.75.75h1.5a.75.75 0 00.75-.75v-4.5a.75.75 0 00-.75-.75z" />
     </svg>
 );
+
+export const TvIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 20.25h12m-7.5-3.75v3.75m-3.75-3.75v3.75m-3.75-3.75h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+    </svg>
+);
