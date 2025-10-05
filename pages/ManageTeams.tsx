@@ -59,6 +59,19 @@ const ManageTeams: React.FC = () => {
     }
   };
 
+  const handleDownloadTemplate = () => {
+    const content = "John Doe\nJane Smith\nPeter Jones";
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'player_import_template.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const canManageTeams = hasPermission('teams:edit') || hasPermission('teams:delete') || hasPermission('players:manage');
 
   return (
@@ -101,8 +114,11 @@ const ManageTeams: React.FC = () => {
       
       <Modal isOpen={isPlayerModalOpen} onClose={closeModal} title={`Manage Players for ${managingPlayersForTeam?.name}`}>
         <div className="p-6">
-          <label htmlFor="playerNames" className="block text-sm font-medium text-gray-700">Import Players</label>
-          <p className="text-xs text-gray-500 mb-2">Enter one player name per line. They will be added to the team roster.</p>
+          <div className="flex justify-between items-center mb-1">
+            <label htmlFor="playerNames" className="block text-sm font-medium text-gray-700">Import Players</label>
+            <Button type="button" variant="outline" onClick={handleDownloadTemplate} className="text-xs !py-1 !px-2">Download Template</Button>
+          </div>
+          <p className="text-xs text-gray-500 mb-2">Enter one player name per line. They will be added to the team roster. Existing players will be ignored.</p>
           <textarea id="playerNames" value={playerNames} onChange={(e) => setPlayerNames(e.target.value)} rows={10} className="w-full border border-gray-300 rounded-md p-2" placeholder="John Smith&#10;Peter Jones&#10;..."></textarea>
         </div>
         <div className="bg-gray-50 px-6 py-4 flex flex-row-reverse"><Button onClick={handleImportPlayers}>Import Players</Button></div>

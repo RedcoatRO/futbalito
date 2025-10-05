@@ -621,14 +621,38 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   // Player Management
   const addPlayersToTeam = (teamId: string, playerNames: string[]) => {
-    const newPlayers: Player[] = playerNames.map(name => ({
+    const team = teams.find(t => t.id === teamId);
+    if (!team) return;
+
+    // Get current player names for the team to avoid duplicates
+    const existingPlayerNames = new Set(
+        players.filter(p => p.teamId === teamId).map(p => p.name.toLowerCase().trim())
+    );
+
+    const newUniquePlayerNames = playerNames
+        .map(name => name.trim())
+        .filter(name => name.length > 0 && !existingPlayerNames.has(name.toLowerCase()));
+
+    if (newUniquePlayerNames.length === 0) {
+        alert("No new unique players to add. All names provided either already exist or were empty.");
+        return;
+    }
+
+    const newPlayers: Player[] = newUniquePlayerNames.map(name => ({
       id: `p-${Date.now()}-${Math.random()}`,
       name,
       teamId,
       stats: { goals: 0, assists: 0, yellowCards: 0, redCards: 0 }
     }));
+
     setPlayers(prev => [...prev, ...newPlayers]);
-    setTeams(prev => prev.map(t => t.id === teamId ? { ...t, playerIds: [...t.playerIds, ...newPlayers.map(p => p.id)] } : t));
+    setTeams(prev => prev.map(t => 
+        t.id === teamId 
+            ? { ...t, playerIds: [...t.playerIds, ...newPlayers.map(p => p.id)] } 
+            : t
+    ));
+    logAction('Manage Players', `Added ${newPlayers.length} players to team "${team.name}"`);
+    alert(`${newPlayers.length} new players added successfully to ${team.name}.`);
   };
   
   // Standings Calculation

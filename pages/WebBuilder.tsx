@@ -29,9 +29,7 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
   const [config, setConfig] = useState<PublicConfig>(defaultConfig);
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
-  const availableLiveMatches = useMemo(() => {
-    return matches.filter(m => m.competitionId === competitionId && m.status === 'In Progress' && m.liveStreamUrl);
-  }, [matches, competitionId]);
+  const availableLiveMatches = matches.filter(m => m.competitionId === competitionId && m.status === 'In Progress' && m.liveStreamUrl);
 
   useEffect(() => {
     if (competition) {
