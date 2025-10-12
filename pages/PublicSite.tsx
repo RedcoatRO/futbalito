@@ -7,6 +7,7 @@ import PublicArticlesList from '../components/public/PublicArticlesList';
 import PublicGalleriesList from '../components/public/PublicGalleriesList';
 import PublicSponsors from '../components/public/PublicSponsors';
 import PublicPlayerStats from '../components/public/PublicPlayerStats';
+import PublicRegulations from '../components/public/PublicRegulations';
 
 interface PublicSiteProps {
   competitionId: string;
@@ -33,6 +34,7 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
     { name: 'Live', active: config.showLiveStream, anchor: 'news' },
     { name: 'News', active: config.showArticles, anchor: 'news' },
     { name: 'Galleries', active: config.showGalleries, anchor: 'galleries' },
+    { name: 'Regulations', active: config.showRegulations, anchor: 'regulations'},
     { name: 'Rankings', active: config.showRankings, anchor: 'rankings' },
     { name: 'Schedule', active: config.showSchedule, anchor: 'schedule' },
     { name: 'Stats', active: config.showPlayerStats, anchor: 'stats' },
@@ -63,6 +65,7 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
             {config.showArticles && <div id="news"><PublicArticlesList competitionId={competition.id} /></div>}
             {config.showGalleries && <div id="galleries"><PublicGalleriesList competitionId={competition.id} /></div>}
             {config.showSponsors && <div id="sponsors"><PublicSponsors competitionId={competition.id} /></div>}
+            {config.showRegulations && <div id="regulations"><PublicRegulations competitionId={competition.id} /></div>}
             {config.showRankings && (competition.format === 'league' || competition.format === 'mixed') && <div id="rankings"><PublicRankings competitionId={competition.id} /></div>}
             {config.showSchedule && <div id="schedule"><PublicSchedule competitionId={competition.id} /></div>}
             {config.showPlayerStats && <div id="stats"><PublicPlayerStats competitionId={competition.id} /></div>}

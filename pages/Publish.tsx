@@ -9,10 +9,11 @@ interface PublishProps {
     onManageArticles: (competitionId: string) => void;
     onManageMedia: (competitionId: string) => void;
     onManageSponsors: (competitionId: string) => void;
+    onManageRegulations: (competitionId: string) => void;
     onCustomizePortal: () => void;
 }
 
-const Publish: React.FC<PublishProps> = ({ onCustomizeSite, onManageArticles, onManageMedia, onManageSponsors, onCustomizePortal }) => {
+const Publish: React.FC<PublishProps> = ({ onCustomizeSite, onManageArticles, onManageMedia, onManageSponsors, onManageRegulations, onCustomizePortal }) => {
     const { competitions, articles } = useCompetitions();
     const { hasPermission } = usePermissions();
 
@@ -68,6 +69,7 @@ const Publish: React.FC<PublishProps> = ({ onCustomizeSite, onManageArticles, on
                                             {hasPermission('publish:manage_sponsors') && <Button onClick={() => onManageSponsors(comp.id)} variant="outline" className="text-xs">Sponsors</Button>}
                                             {hasPermission('publish:manage_media') && <Button onClick={() => onManageMedia(comp.id)} variant="outline" className="text-xs">Media</Button>}
                                             {hasPermission('publish:manage_articles') && <Button onClick={() => onManageArticles(comp.id)} variant="outline" className="text-xs">Articles</Button>}
+                                            {hasPermission('publish:manage_regulations') && <Button onClick={() => onManageRegulations(comp.id)} variant="outline" className="text-xs">Regulations</Button>}
                                             {hasPermission('publish:customize_sites') && <Button onClick={() => onCustomizeSite(comp.id)} variant="secondary" className="text-xs">Customize Site</Button>}
                                         </td>
                                     </tr>

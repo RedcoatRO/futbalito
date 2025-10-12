@@ -9,6 +9,7 @@ import PublicArticlesList from '../components/public/PublicArticlesList';
 import PublicGalleriesList from '../components/public/PublicGalleriesList';
 import PublicSponsors from '../components/public/PublicSponsors';
 import PublicPlayerStats from '../components/public/PublicPlayerStats';
+import PublicRegulations from '../components/public/PublicRegulations';
 
 interface WebBuilderProps {
   competitionId: string;
@@ -22,7 +23,7 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
   const defaultConfig: PublicConfig = {
     title: '', description: '', logoUrl: '', primaryColor: '#3B82F6', backgroundColor: '#F9FAFB',
     showSchedule: false, showRankings: false, showArticles: false, showGalleries: false,
-    showSponsors: false, showSponsorsInFooter: false, showPlayerStats: false, showLiveStream: false, featuredLiveMatchIds: [],
+    showSponsors: false, showSponsorsInFooter: false, showPlayerStats: false, showLiveStream: false, showRegulations: false, featuredLiveMatchIds: [],
     footerText: '', facebookUrl: '', twitterUrl: '', instagramUrl: ''
   };
 
@@ -131,6 +132,7 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
               <label className="flex items-center"><input type="checkbox" name="showSchedule" checked={config.showSchedule} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Match Schedule</span></label>
               <label className="flex items-center"><input type="checkbox" name="showRankings" checked={config.showRankings} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Rankings Table</span></label>
               <label className="flex items-center"><input type="checkbox" name="showPlayerStats" checked={config.showPlayerStats} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Player Statistics</span></label>
+              <label className="flex items-center"><input type="checkbox" name="showRegulations" checked={config.showRegulations} onChange={handleInputChange} className="h-4 w-4 rounded" /><span className="ml-2 text-sm font-medium">Show Regulations Section</span></label>
             </div>
             
           <h2 className="text-xl font-semibold border-b pb-3 pt-4">Featured Live Streams</h2>
@@ -190,6 +192,7 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ competitionId, onBack }) => {
                      {config.showArticles && <PublicArticlesList competitionId={competitionId} />}
                      {config.showGalleries && <PublicGalleriesList competitionId={competitionId} />}
                      {config.showSponsors && <PublicSponsors competitionId={competitionId} />}
+                     {config.showRegulations && <PublicRegulations competitionId={competitionId} />}
                      {config.showRankings && competition && (competition.format === 'league' || competition.format === 'mixed') && <PublicRankings competitionId={competitionId} />}
                      {config.showSchedule && <PublicSchedule competitionId={competitionId} />}
                      {config.showPlayerStats && <PublicPlayerStats competitionId={competitionId} />}

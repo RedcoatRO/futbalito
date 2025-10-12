@@ -6,6 +6,8 @@ import ManageCompetitions from './pages/ManageCompetitions';
 import ManageTeams from './pages/ManageTeams';
 import ManageArenas from './pages/ManageArenas';
 import ManagePlayers from './pages/ManagePlayers';
+import ManageReferees from './pages/ManageReferees';
+import ManageObservers from './pages/ManageObservers';
 import LiveMatch from './pages/LiveMatch';
 import Browse from './pages/Browse';
 import Publish from './pages/Publish';
@@ -16,6 +18,7 @@ import EditArticle from './pages/EditArticle';
 import ManageMedia from './pages/ManageMedia';
 import EditGallery from './pages/EditGallery';
 import ManageSponsors from './pages/ManageSponsors';
+import ManageRegulations from './pages/ManageRegulations';
 import Settings from './pages/Settings';
 import Marketplace from './pages/Marketplace';
 import CompetitionDetail from './pages/CompetitionDetail';
@@ -76,6 +79,11 @@ const App: React.FC = () => {
     setSelectedCompetitionForPublishId(competitionId);
     setCurrentPage('MANAGE_SPONSORS');
   };
+  
+  const handleManageRegulations = (competitionId: string) => {
+    setSelectedCompetitionForPublishId(competitionId);
+    setCurrentPage('MANAGE_REGULATIONS');
+  };
 
   const handleBackToPublish = () => {
     setSelectedCompetitionForPublishId(null);
@@ -131,45 +139,54 @@ const App: React.FC = () => {
         return <ManageArenas />;
       case 'MANAGE_PLAYERS':
         return <ManagePlayers />;
+      case 'MANAGE_REFEREES':
+        return <ManageReferees />;
+      case 'MANAGE_OBSERVERS':
+        return <ManageObservers />;
       case 'COMPETITION_DETAIL':
         if (selectedCompetitionId) {
           return <CompetitionDetail competitionId={selectedCompetitionId} onBack={handleBackToCompetitions} onManageLiveMatch={handleManageLiveMatch} />;
         }
         return <ManageCompetitions setPage={setCurrentPage} onViewCompetition={handleViewCompetition} />;
       case 'PUBLISH':
-        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onCustomizePortal={handleCustomizePortal} />;
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
        case 'WEB_BUILDER':
         if (selectedCompetitionForPublishId) {
           return <WebBuilder competitionId={selectedCompetitionForPublishId} onBack={handleBackToPublish} />;
         }
-        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onCustomizePortal={handleCustomizePortal} />;
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
       case 'PORTAL_BUILDER':
         return <PortalBuilder onBack={handleBackToPublish} />;
       case 'MANAGE_ARTICLES':
         if (selectedCompetitionForPublishId) {
             return <ManageArticles competitionId={selectedCompetitionForPublishId} onBack={handleBackToPublish} onEditArticle={handleEditArticle} onCreateArticle={handleCreateArticle} />;
         }
-        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onCustomizePortal={handleCustomizePortal} />;
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
       case 'EDIT_ARTICLE':
         if (selectedCompetitionForPublishId) {
             return <EditArticle competitionId={selectedCompetitionForPublishId} articleId={selectedArticleId} onBack={handleBackToArticles} />;
         }
-        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onCustomizePortal={handleCustomizePortal} />;
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
       case 'MANAGE_MEDIA':
         if (selectedCompetitionForPublishId) {
             return <ManageMedia competitionId={selectedCompetitionForPublishId} onBack={handleBackToPublish} onCreateGallery={handleCreateGallery} onEditGallery={handleEditGallery} />;
         }
-        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onCustomizePortal={handleCustomizePortal} />;
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
       case 'EDIT_GALLERY':
         if (selectedCompetitionForPublishId) {
             return <EditGallery competitionId={selectedCompetitionForPublishId} galleryId={selectedGalleryId} onBack={handleBackToMedia} />;
         }
-        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onCustomizePortal={handleCustomizePortal} />;
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
       case 'MANAGE_SPONSORS':
         if (selectedCompetitionForPublishId) {
             return <ManageSponsors competitionId={selectedCompetitionForPublishId} onBack={handleBackToPublish} />;
         }
-        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onCustomizePortal={handleCustomizePortal} />;
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
+      case 'MANAGE_REGULATIONS':
+        if (selectedCompetitionForPublishId) {
+            return <ManageRegulations competitionId={selectedCompetitionForPublishId} onBack={handleBackToPublish} />;
+        }
+        return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
       case 'SETTINGS':
         return <Settings setPage={setCurrentPage} />;
       case 'MARKETPLACE':

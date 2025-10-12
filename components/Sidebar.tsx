@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Page } from '../types';
 import usePermissions from '../hooks/usePermissions';
-import { HomeIcon, EyeIcon, WrenchScrewdriverIcon, PencilSquareIcon, Cog6ToothIcon, ShoppingCartIcon, ShieldCheckIcon, UserGroupIcon, UserIcon, MapPinIcon } from './icons/Icons';
+import { HomeIcon, EyeIcon, WrenchScrewdriverIcon, PencilSquareIcon, Cog6ToothIcon, ShoppingCartIcon, ShieldCheckIcon, UserGroupIcon, UserIcon, MapPinIcon, ScaleIcon, AcademicCapIcon } from './icons/Icons';
 
 interface SidebarProps {
   currentPage: Page;
@@ -19,6 +19,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage, isOpen }) => {
     { page: 'MANAGE_COMPETITIONS', label: 'Competitions', icon: WrenchScrewdriverIcon, requiredPermission: hasPermission('competitions:edit') },
     { page: 'MANAGE_TEAMS', label: 'Teams', icon: UserGroupIcon, requiredPermission: hasPermission('teams:edit') },
     { page: 'MANAGE_PLAYERS', label: 'Players', icon: UserIcon, requiredPermission: hasPermission('players:manage') },
+    { page: 'MANAGE_REFEREES', label: 'Referees', icon: ScaleIcon, requiredPermission: hasPermission('referees:manage') },
+    { page: 'MANAGE_OBSERVERS', label: 'Observers', icon: AcademicCapIcon, requiredPermission: hasPermission('observers:manage') },
     { page: 'MANAGE_ARENAS', label: 'Arenas', icon: MapPinIcon, requiredPermission: hasPermission('arenas:manage') },
     { page: 'PUBLISH', label: 'Publish', icon: PencilSquareIcon, requiredPermission: hasPermission('publish:manage_articles') || hasPermission('publish:customize_sites') },
     { page: 'SETTINGS', label: 'Settings', icon: Cog6ToothIcon, requiredPermission: hasPermission('settings:manage_organization') || hasPermission('users:invite') },
@@ -37,6 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage, isOpen }) => {
     'MANAGE_MEDIA': 'PUBLISH',
     'EDIT_GALLERY': 'PUBLISH',
     'MANAGE_SPONSORS': 'PUBLISH',
+    'MANAGE_REGULATIONS': 'PUBLISH',
   };
 
   const activePage = parentPages[currentPage] || currentPage;

@@ -6,6 +6,8 @@ export type Page =
   | 'MANAGE_TEAMS'
   | 'MANAGE_PLAYERS'
   | 'MANAGE_ARENAS'
+  | 'MANAGE_REFEREES'
+  | 'MANAGE_OBSERVERS'
   | 'PUBLISH' 
   | 'WEB_BUILDER'
   | 'PORTAL_BUILDER'
@@ -14,6 +16,7 @@ export type Page =
   | 'MANAGE_MEDIA'
   | 'EDIT_GALLERY'
   | 'MANAGE_SPONSORS'
+  | 'MANAGE_REGULATIONS'
   | 'SETTINGS' 
   | 'MARKETPLACE'
   | 'LIVE_MATCH';
@@ -38,11 +41,14 @@ export type Permission =
   | 'teams:delete'
   | 'players:manage'
   | 'arenas:manage'
+  | 'referees:manage'
+  | 'observers:manage'
   | 'matches:manage_live'
   // Publishing
   | 'publish:manage_articles'
   | 'publish:manage_media'
   | 'publish:manage_sponsors'
+  | 'publish:manage_regulations'
   | 'publish:customize_sites'
   // Administration
   | 'settings:manage_organization'
@@ -117,6 +123,12 @@ export interface Sponsor {
     websiteUrl: string;
 }
 
+export interface Regulation {
+    id: 'statute' | 'game' | 'organization' | 'disciplinary';
+    title: string;
+    content: string;
+    lastUpdatedAt: string;
+}
 
 export interface PublicConfig {
   title: string;
@@ -132,6 +144,8 @@ export interface PublicConfig {
   showSponsorsInFooter?: boolean;
   showPlayerStats?: boolean;
   showLiveStream?: boolean;
+  showRegulations?: boolean;
+  regulations?: Regulation[];
   featuredLiveMatchIds?: string[];
   footerText?: string;
   facebookUrl?: string;

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { Competition, Team, Match, Arena, Player, StandingsRow, MatchEvent, PublicConfig, Article, MediaImage, Gallery, Sponsor, PortalConfig, OrganizationSettings, User, Role, Permission, Invoice, AuditLogEntry } from '../types';
+import type { Competition, Team, Match, Arena, Player, StandingsRow, MatchEvent, PublicConfig, Article, MediaImage, Gallery, Sponsor, PortalConfig, OrganizationSettings, User, Role, Permission, Invoice, AuditLogEntry, Regulation } from '../types';
 
 // --- INITIAL MOCK DATA ---
 const initialArenas: Arena[] = [
@@ -24,7 +24,7 @@ const allPermissions: Permission[] = [
     'competitions:create', 'competitions:edit', 'competitions:delete',
     'teams:create', 'teams:edit', 'teams:delete',
     'players:manage', 'arenas:manage', 'matches:manage_live',
-    'publish:manage_articles', 'publish:manage_media', 'publish:manage_sponsors', 'publish:customize_sites',
+    'publish:manage_articles', 'publish:manage_media', 'publish:manage_sponsors', 'publish:customize_sites', 'publish:manage_regulations',
     'settings:manage_organization', 'users:invite', 'users:manage_roles'
 ];
 
@@ -39,7 +39,7 @@ const initialRoles: Role[] = [
         id: 'role-content-editor',
         name: 'Content Editor',
         description: 'Can manage articles, media, and sponsors.',
-        permissions: ['publish:manage_articles', 'publish:manage_media', 'publish:manage_sponsors'],
+        permissions: ['publish:manage_articles', 'publish:manage_media', 'publish:manage_sponsors', 'publish:manage_regulations'],
     },
     {
         id: 'role-match-manager',
@@ -146,6 +146,10 @@ const initialCompetitions: Competition[] = [
         showSponsorsInFooter: true,
         showPlayerStats: true,
         showLiveStream: true,
+        showRegulations: true,
+        regulations: [
+            { id: 'statute', title: 'Statute', content: 'This is the official statute.', lastUpdatedAt: new Date().toISOString() }
+        ],
         featuredLiveMatchIds: ['m2'],
         footerText: '© 2024 Premier Mini-Football League. All Rights Reserved.',
         facebookUrl: 'https://facebook.com',
@@ -244,6 +248,8 @@ interface CompetitionContextState {
   addSponsor: (data: Omit<Sponsor, 'id' | 'logoUrl'>, logoFile?: File | null) => void;
   updateSponsor: (data: Sponsor, logoFile?: File | null) => void;
   deleteSponsor: (id: string) => void;
+  // FIX: Add updateCompetitionRegulation to context to allow editing regulations.
+  updateCompetitionRegulation: (competitionId: string, regulation: Regulation) => void;
 }
 
 const CompetitionContext = createContext<CompetitionContextState | undefined>(undefined);
@@ -415,6 +421,8 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
                 showSponsorsInFooter: false,
                 showPlayerStats: false,
                 showLiveStream: false,
+                showRegulations: false,
+                regulations: [],
                 featuredLiveMatchIds: [],
                 footerText: '',
                 facebookUrl: '',
@@ -434,6 +442,40 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     }));
     const comp = competitions.find(c => c.id === competitionId);
     if(comp) logAction('Customize Public Site', `Updated public site for "${comp.name}"`);
+  };
+
+  const updateCompetitionRegulation = (competitionId: string, regulation: Regulation) => {
+    setCompetitions(prev => prev.map(c => {
+        if (c.id === competitionId) {
+            const publicConfig = c.publicConfig || { 
+                title: c.name, 
+                description: '', 
+                logoUrl: c.logoUrl, 
+                primaryColor: '#000000', 
+                backgroundColor: '#FFFFFF',
+            };
+            const regulations = publicConfig.regulations || [];
+
+            const existingIndex = regulations.findIndex(r => r.id === regulation.id);
+            const newRegulations = [...regulations];
+            if (existingIndex > -1) {
+                newRegulations[existingIndex] = regulation;
+            } else {
+                newRegulations.push(regulation);
+            }
+            
+            return {
+                ...c,
+                publicConfig: {
+                    ...publicConfig,
+                    regulations: newRegulations,
+                }
+            };
+        }
+        return c;
+    }));
+    const comp = competitions.find(c => c.id === competitionId);
+    if(comp) logAction('Update Regulation', `Updated "${regulation.title}" for "${comp.name}"`);
   };
 
   const addTeam = (teamData: any) => {
@@ -842,6 +884,7 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     updatePortalConfig,
     addCompetition, updateCompetition, deleteCompetition, getCompetitionById,
     updateCompetitionPublicConfig,
+    updateCompetitionRegulation,
     addTeam, updateTeam, deleteTeam, addTeamToCompetition, generateMatchesForCompetition,
     getMatchById, updateMatch,
     addArena, updateArena, deleteArena,
