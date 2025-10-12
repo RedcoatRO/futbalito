@@ -1,5 +1,8 @@
+
+
 import React from 'react';
-import { XMarkIcon } from '../icons/Icons';
+// FIX: Added .tsx extension to module import.
+import { XMarkIcon } from '../icons/Icons.tsx';
 
 interface ModalProps {
   isOpen: boolean;

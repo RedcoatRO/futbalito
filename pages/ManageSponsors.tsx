@@ -1,11 +1,14 @@
+
 import React, { useState } from 'react';
-import type { Sponsor } from '../types';
-import Button from '../components/ui/Button';
-import Modal from '../components/ui/Modal';
-import SponsorForm from '../components/SponsorForm';
-import { ChevronLeftIcon, PlusIcon } from '../components/icons/Icons';
-import { useCompetitions } from '../context/CompetitionContext';
-import usePermissions from '../hooks/usePermissions';
+// FIX: Added .ts extension to module import.
+import type { Sponsor } from '../types.ts';
+import Button from '../components/ui/Button.tsx';
+import Modal from '../components/ui/Modal.tsx';
+import SponsorForm from '../components/SponsorForm.tsx';
+import { ChevronLeftIcon, PlusIcon } from '../components/icons/Icons.tsx';
+// FIX: Added .ts extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import usePermissions from '../hooks/usePermissions.ts';
 
 interface ManageSponsorsProps {
   competitionId: string;
@@ -63,18 +66,37 @@ const ManageSponsors: React.FC<ManageSponsorsProps> = ({ competitionId, onBack }
         </div>
         {canManageSponsors && <Button onClick={openCreateModal}><PlusIcon className="h-5 w-5 mr-2" />Add Sponsor</Button>}
       </div>
-
+      
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50"><tr><th className="px-6 py-3 text-left text-xs font-medium uppercase">Sponsor</th><th className="px-6 py-3 text-left text-xs font-medium uppercase">Website</th>{canManageSponsors && <th className="px-6 py-3 text-right text-xs font-medium uppercase">Actions</th>}</tr></thead>
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sponsor</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
+                {canManageSponsors && (
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                )}
+              </tr>
+            </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {competitionSponsors.map((sponsor) => (
                 <tr key={sponsor.id}>
-                  <td className="px-6 py-4"><div className="flex items-center"><img className="h-10 w-20 object-contain" src={sponsor.logoUrl} alt={sponsor.name} /><div className="ml-4 font-medium">{sponsor.name}</div></div></td>
-                  <td className="px-6 py-4 text-sm text-gray-500"><a href={sponsor.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{sponsor.websiteUrl}</a></td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                          <img className="h-10 w-20 object-contain bg-gray-100 p-1 rounded" src={sponsor.logoUrl} alt={sponsor.name} />
+                          <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">{sponsor.name}</div>
+                          </div>
+                      </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <a href={sponsor.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          {sponsor.websiteUrl}
+                      </a>
+                  </td>
                   {canManageSponsors && (
-                    <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                         <button onClick={() => openEditModal(sponsor)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
                         <button onClick={() => handleDelete(sponsor.id)} className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
@@ -85,12 +107,14 @@ const ManageSponsors: React.FC<ManageSponsorsProps> = ({ competitionId, onBack }
           </table>
         </div>
       </div>
-
-        {canManageSponsors && (
-            <Modal isOpen={isModalOpen} onClose={closeModal} title={editingSponsor ? 'Edit Sponsor' : 'Add New Sponsor'}>
-                <SponsorForm sponsor={editingSponsor} onSave={handleSave} onClose={closeModal} />
-            </Modal>
-        )}
+      
+      <Modal isOpen={isModalOpen} onClose={closeModal} title={editingSponsor ? 'Edit Sponsor' : 'Add New Sponsor'}>
+        <SponsorForm 
+          sponsor={editingSponsor}
+          onSave={handleSave}
+          onClose={closeModal}
+        />
+      </Modal>
     </div>
   );
 };

@@ -1,5 +1,7 @@
+
 import React from 'react';
-import { useCompetitions } from '../../context/CompetitionContext';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../../context/CompetitionContext.tsx';
 
 interface PublicSponsorsProps {
   competitionId: string;

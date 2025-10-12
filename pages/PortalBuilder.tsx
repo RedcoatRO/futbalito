@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
-import type { PortalConfig } from '../types';
-import { useCompetitions } from '../context/CompetitionContext';
-import Button from '../components/ui/Button';
-import { ChevronLeftIcon } from '../components/icons/Icons';
+import type { PortalConfig } from '../types.ts';
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import Button from '../components/ui/Button.tsx';
+import { ChevronLeftIcon } from '../components/icons/Icons.tsx';
 
 interface PortalBuilderProps {
   onBack: () => void;

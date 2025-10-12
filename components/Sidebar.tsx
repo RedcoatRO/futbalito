@@ -1,76 +1,143 @@
+
 import React from 'react';
-import type { Page } from '../types';
-import usePermissions from '../hooks/usePermissions';
-import { HomeIcon, EyeIcon, WrenchScrewdriverIcon, PencilSquareIcon, Cog6ToothIcon, ShoppingCartIcon, ShieldCheckIcon, UserGroupIcon, UserIcon, MapPinIcon, ScaleIcon, AcademicCapIcon } from './icons/Icons';
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import usePermissions from '../hooks/usePermissions.ts';
+import type { Page } from '../types.ts';
+import {
+  ChartPieIcon, EyeIcon, WrenchScrewdriverIcon, UsersIcon,
+  UserGroupIcon, FlagIcon, MapIcon, LifebuoyIcon, UserCircleIcon,
+  ShieldCheckIcon, NewspaperIcon, BanknotesIcon, Cog6ToothIcon,
+  ArrowRightStartOnRectangleIcon, XMarkIcon, BuildingLibraryIcon, AcademicCapIcon
+} from './icons/Icons.tsx';
 
 interface SidebarProps {
-  currentPage: Page;
+  page: Page;
   setPage: (page: Page) => void;
-  isOpen: boolean;
-  setOpen: (isOpen: boolean) => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentPage, setPage, isOpen }) => {
+// FIX: Define a type for menu items to ensure type safety.
+interface MenuItem {
+    page: Page;
+    label: string;
+    icon: React.ReactNode;
+    permission: boolean;
+}
+
+interface NavItemProps {
+  icon: React.ReactNode;
+  label: string;
+  pageName: Page;
+  currentPage: Page;
+  setPage: (page: Page) => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ icon, label, pageName, currentPage, setPage }) => (
+  <li>
+    <button
+      onClick={() => setPage(pageName)}
+      className={`w-full flex items-center p-2 rounded-lg text-left transition-colors ${
+        currentPage === pageName
+          ? 'bg-blue-600 text-white'
+          : 'text-gray-200 hover:bg-blue-800 hover:text-white'
+      }`}
+    >
+      {icon}
+      <span className="ml-3">{label}</span>
+    </button>
+  </li>
+);
+
+const Sidebar: React.FC<SidebarProps> = ({ page, setPage, sidebarOpen, setSidebarOpen }) => {
+  const { organizationSettings } = useCompetitions();
   const { hasPermission } = usePermissions();
 
-  const navItems = [
-    { page: 'DASHBOARD', label: 'Dashboard', icon: HomeIcon, requiredPermission: true },
-    { page: 'BROWSE', label: 'Browse', icon: EyeIcon, requiredPermission: true },
-    { page: 'MANAGE_COMPETITIONS', label: 'Competitions', icon: WrenchScrewdriverIcon, requiredPermission: hasPermission('competitions:edit') },
-    { page: 'MANAGE_TEAMS', label: 'Teams', icon: UserGroupIcon, requiredPermission: hasPermission('teams:edit') },
-    { page: 'MANAGE_PLAYERS', label: 'Players', icon: UserIcon, requiredPermission: hasPermission('players:manage') },
-    { page: 'MANAGE_REFEREES', label: 'Referees', icon: ScaleIcon, requiredPermission: hasPermission('referees:manage') },
-    { page: 'MANAGE_OBSERVERS', label: 'Observers', icon: AcademicCapIcon, requiredPermission: hasPermission('observers:manage') },
-    { page: 'MANAGE_ARENAS', label: 'Arenas', icon: MapPinIcon, requiredPermission: hasPermission('arenas:manage') },
-    { page: 'PUBLISH', label: 'Publish', icon: PencilSquareIcon, requiredPermission: hasPermission('publish:manage_articles') || hasPermission('publish:customize_sites') },
-    { page: 'SETTINGS', label: 'Settings', icon: Cog6ToothIcon, requiredPermission: hasPermission('settings:manage_organization') || hasPermission('users:invite') },
-    { page: 'MARKETPLACE', label: 'Marketplace', icon: ShoppingCartIcon, requiredPermission: true },
-  ];
-  
-  const visibleNavItems = navItems.filter(item => item.requiredPermission);
-
-  const parentPages: Partial<Record<Page, Page>> = {
-    'COMPETITION_DETAIL': 'MANAGE_COMPETITIONS',
-    'LIVE_MATCH': 'MANAGE_COMPETITIONS',
-    'WEB_BUILDER': 'PUBLISH',
-    'PORTAL_BUILDER': 'PUBLISH',
-    'MANAGE_ARTICLES': 'PUBLISH',
-    'EDIT_ARTICLE': 'PUBLISH',
-    'MANAGE_MEDIA': 'PUBLISH',
-    'EDIT_GALLERY': 'PUBLISH',
-    'MANAGE_SPONSORS': 'PUBLISH',
-    'MANAGE_REGULATIONS': 'PUBLISH',
+  // FIX: Explicitly type the menuItems object to fix type inference issues.
+  const menuItems: {
+    main: MenuItem[];
+    manage: MenuItem[];
+    tools: MenuItem[];
+    account: MenuItem[];
+  } = {
+    main: [
+      { page: 'DASHBOARD', label: 'Dashboard', icon: <ChartPieIcon className="h-6 w-6" />, permission: true },
+      { page: 'BROWSE', label: 'Browse', icon: <EyeIcon className="h-6 w-6" />, permission: true },
+    ],
+    manage: [
+      { page: 'MANAGE_COMPETITIONS', label: 'Competitions', icon: <ShieldCheckIcon className="h-6 w-6" />, permission: hasPermission('competitions:edit') },
+      { page: 'MANAGE_TEAMS', label: 'Teams', icon: <UsersIcon className="h-6 w-6" />, permission: hasPermission('teams:edit') },
+      { page: 'MANAGE_PLAYERS', label: 'Players', icon: <UserGroupIcon className="h-6 w-6" />, permission: hasPermission('players:manage') },
+      { page: 'MANAGE_ARENAS', label: 'Arenas', icon: <MapIcon className="h-6 w-6" />, permission: hasPermission('arenas:manage') },
+      { page: 'MANAGE_REFEREES', label: 'Referees', icon: <LifebuoyIcon className="h-6 w-6" />, permission: hasPermission('referees:manage') },
+      { page: 'MANAGE_OBSERVERS', label: 'Observers', icon: <UserCircleIcon className="h-6 w-6" />, permission: hasPermission('observers:manage') },
+      { page: 'MANAGE_ORGANIZERS', label: 'Organizers', icon: <AcademicCapIcon className="h-6 w-6" />, permission: hasPermission('organizers:manage') },
+      { page: 'MANAGE_NATIONAL_TEAM', label: 'National Team', icon: <FlagIcon className="h-6 w-6" />, permission: hasPermission('players:manage') },
+    ],
+    tools: [
+      { page: 'PUBLISH', label: 'Publish', icon: <NewspaperIcon className="h-6 w-6" />, permission: hasPermission('publish:customize_sites') },
+      { page: 'REPORTS', label: 'Reports', icon: <BanknotesIcon className="h-6 w-6" />, permission: hasPermission('transfers:manage') },
+      { page: 'MARKETPLACE', label: 'Marketplace', icon: <BuildingLibraryIcon className="h-6 w-6" />, permission: true },
+    ],
+    account: [
+      { page: 'SETTINGS', label: 'Settings', icon: <Cog6ToothIcon className="h-6 w-6" />, permission: true },
+    ]
   };
 
-  const activePage = parentPages[currentPage] || currentPage;
-
   return (
-    <div className={`fixed top-0 left-0 h-full bg-white border-r border-gray-200 flex flex-col transition-width duration-300 ${isOpen ? 'w-64' : 'w-20'}`}>
-      <div className="flex items-center h-16 px-6 border-b border-gray-200 flex-shrink-0">
-        <ShieldCheckIcon className="h-8 w-8 text-blue-600" />
-        {isOpen && <span className="ml-3 text-xl font-bold text-gray-800">Futbalito</span>}
-      </div>
-      <nav className="flex-1 py-6 px-4 space-y-2">
-        {visibleNavItems.map((item) => {
-          const isActive = activePage === item.page;
-          return (
-            <button
-              key={item.page}
-              onClick={() => setPage(item.page)}
-              className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 ${
-                isActive
-                  ? 'bg-blue-50 text-blue-600 font-semibold'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-              }`}
-            >
-              <item.icon className={`h-6 w-6 ${isOpen ? '' : 'mx-auto'}`} />
-              {isOpen && <span className="ml-4">{item.label}</span>}
+    <>
+        <div className={`fixed inset-0 bg-gray-900 bg-opacity-50 z-30 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`} onClick={() => setSidebarOpen(false)}></div>
+        <aside className={`fixed lg:relative inset-y-0 left-0 bg-blue-900 text-white w-64 p-4 space-y-6 flex flex-col transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-40`}>
+        <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+                <img src={organizationSettings.logoUrl} alt="Logo" className="h-10 w-10 rounded-full" />
+                <span className="text-xl font-bold">{organizationSettings.name}</span>
+            </div>
+             <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 text-gray-300 hover:text-white">
+                <XMarkIcon className="h-6 w-6" />
             </button>
-          );
-        })}
-      </nav>
-      <div className="flex-1"></div>
-    </div>
+        </div>
+
+        <nav className="flex-1">
+            <h3 className="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Main</h3>
+            <ul className="mt-2 space-y-1">
+                {menuItems.main.filter(item => item.permission).map(item => (
+                    <NavItem key={item.page} icon={item.icon} label={item.label} pageName={item.page} currentPage={page} setPage={setPage} />
+                ))}
+            </ul>
+
+            <h3 className="mt-6 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Manage</h3>
+            <ul className="mt-2 space-y-1">
+                 {menuItems.manage.filter(item => item.permission).map(item => (
+                    <NavItem key={item.page} icon={item.icon} label={item.label} pageName={item.page} currentPage={page} setPage={setPage} />
+                ))}
+            </ul>
+
+            <h3 className="mt-6 px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Tools</h3>
+            <ul className="mt-2 space-y-1">
+                {menuItems.tools.filter(item => item.permission).map(item => (
+                    <NavItem key={item.page} icon={item.icon} label={item.label} pageName={item.page} currentPage={page} setPage={setPage} />
+                ))}
+            </ul>
+        </nav>
+
+        <div>
+            <ul className="space-y-1 border-t border-blue-800 pt-4">
+                 {menuItems.account.filter(item => item.permission).map(item => (
+                    <NavItem key={item.page} icon={item.icon} label={item.label} pageName={item.page} currentPage={page} setPage={setPage} />
+                ))}
+                 <li>
+                    <button
+                    className="w-full flex items-center p-2 rounded-lg text-gray-200 hover:bg-blue-800 hover:text-white"
+                    >
+                    <ArrowRightStartOnRectangleIcon className="h-6 w-6" />
+                    <span className="ml-3">Logout</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        </aside>
+    </>
   );
 };
 

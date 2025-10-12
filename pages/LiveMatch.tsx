@@ -1,13 +1,20 @@
+
+
 import React, { useState, useMemo } from 'react';
-import type { MatchEvent } from '../types';
-import { MatchEventType } from '../types';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import Modal from '../components/ui/Modal';
-import EventForm from '../components/EventForm';
-import { PlayIcon, PauseIcon, ArrowPathIcon, ChevronLeftIcon, PencilSquareIcon, XMarkIcon, VideoCameraIcon } from '../components/icons/Icons';
-import useTimer from '../hooks/useTimer';
-import { useCompetitions } from '../context/CompetitionContext';
+// FIX: Added .ts extension to module import.
+import type { MatchEvent } from '../types.ts';
+// FIX: Added .ts extension to module import.
+import { MatchEventType } from '../types.ts';
+import Card from '../components/ui/Card.tsx';
+import Button from '../components/ui/Button.tsx';
+import Modal from '../components/ui/Modal.tsx';
+import EventForm from '../components/EventForm.tsx';
+// FIX: Added .tsx extension to module import.
+import { PlayIcon, PauseIcon, ArrowPathIcon, ChevronLeftIcon, PencilSquareIcon, XMarkIcon, VideoCameraIcon } from '../components/icons/Icons.tsx';
+// FIX: Added .ts extension to module import.
+import useTimer from '../hooks/useTimer.ts';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
 
 interface LiveMatchProps {
     matchId: string;

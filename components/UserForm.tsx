@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import type { User, Role } from '../types';
-import Button from './ui/Button';
+import type { User, Role } from '../types.ts';
+import Button from './ui/Button.tsx';
 
 interface UserFormProps {
   user?: User | null;

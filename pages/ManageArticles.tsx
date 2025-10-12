@@ -1,9 +1,12 @@
+
 import React from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import usePermissions from '../hooks/usePermissions';
-import Button from '../components/ui/Button';
-import { ChevronLeftIcon, PlusIcon } from '../components/icons/Icons';
-import type { Article } from '../types';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import usePermissions from '../hooks/usePermissions.ts';
+import Button from '../components/ui/Button.tsx';
+import { ChevronLeftIcon, PlusIcon } from '../components/icons/Icons.tsx';
+// FIX: Added .ts extension to module import.
+import type { Article } from '../types.ts';
 
 interface ManageArticlesProps {
   competitionId: string;

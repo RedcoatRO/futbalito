@@ -1,8 +1,13 @@
+
+
 import React from 'react';
-import Button from '../components/ui/Button';
-import { useCompetitions } from '../context/CompetitionContext';
-import usePermissions from '../hooks/usePermissions';
-import { GlobeAltIcon } from '../components/icons/Icons';
+import Button from '../components/ui/Button.tsx';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+// FIX: Added .ts extension to module import.
+import usePermissions from '../hooks/usePermissions.ts';
+// FIX: Added .tsx extension to module import.
+import { GlobeAltIcon } from '../components/icons/Icons.tsx';
 
 interface PublishProps {
     onCustomizeSite: (competitionId: string) => void;

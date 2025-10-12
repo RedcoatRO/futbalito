@@ -1,8 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import Button from '../components/ui/Button';
-import { ChevronLeftIcon } from '../components/icons/Icons';
-import type { Gallery } from '../types';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import Button from '../components/ui/Button.tsx';
+import { ChevronLeftIcon } from '../components/icons/Icons.tsx';
+// FIX: Added .ts extension to module import.
+import type { Gallery } from '../types.ts';
 
 interface EditGalleryProps {
   competitionId: string;

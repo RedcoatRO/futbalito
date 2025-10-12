@@ -1,11 +1,12 @@
+
 import React, { useState, useMemo } from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import Button from '../components/ui/Button';
-import Card from '../components/ui/Card';
-import Modal from '../components/ui/Modal';
-import RegulationForm from '../components/RegulationForm';
-import { ChevronLeftIcon } from '../components/icons/Icons';
-import type { Regulation } from '../types';
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import Button from '../components/ui/Button.tsx';
+import Card from '../components/ui/Card.tsx';
+import Modal from '../components/ui/Modal.tsx';
+import RegulationForm from '../components/RegulationForm.tsx';
+import { ChevronLeftIcon } from '../components/icons/Icons.tsx';
+import type { Regulation } from '../types.ts';
 
 interface ManageRegulationsProps {
   competitionId: string;

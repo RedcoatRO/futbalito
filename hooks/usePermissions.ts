@@ -1,6 +1,7 @@
+
 import { useMemo, useCallback } from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import type { Permission, Role, User } from '../types';
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import type { Permission, Role, User } from '../types.ts';
 
 interface UsePermissionsReturn {
     currentUser: User | null;

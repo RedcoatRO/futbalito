@@ -1,12 +1,17 @@
+
 import React, { useState } from 'react';
-import type { Page, Competition } from '../types';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import Modal from '../components/ui/Modal';
-import CompetitionForm from '../components/CompetitionForm';
-import { PlusIcon } from '../components/icons/Icons';
-import { useCompetitions } from '../context/CompetitionContext';
-import usePermissions from '../hooks/usePermissions';
+// FIX: Added .ts extension to module import.
+import type { Page, Competition } from '../types.ts';
+import Card from '../components/ui/Card.tsx';
+import Button from '../components/ui/Button.tsx';
+import Modal from '../components/ui/Modal.tsx';
+import CompetitionForm from '../components/CompetitionForm.tsx';
+// FIX: Added .tsx extension to module import.
+import { PlusIcon } from '../components/icons/Icons.tsx';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+// FIX: Added .ts extension to module import.
+import usePermissions from '../hooks/usePermissions.ts';
 
 
 interface ManageCompetitionsProps {
@@ -15,7 +20,7 @@ interface ManageCompetitionsProps {
 }
 
 const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewCompetition}) => {
-  const { competitions, matches, addCompetition, updateCompetition, deleteCompetition } = useCompetitions();
+  const { competitions, matches, addCompetition, updateCompetition, deleteCompetition, users } = useCompetitions();
   const { hasPermission } = usePermissions();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCompetition, setEditingCompetition] = useState<Competition | null>(null);
@@ -43,6 +48,8 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
     twoLegged?: boolean;
     fullBracket?: boolean;
     teamsPerGroup?: number;
+    county?: string;
+    organizerId?: string;
   }) => {
     if (editingCompetition) {
       updateCompetition({ ...editingCompetition, ...data });
@@ -57,6 +64,8 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
       deleteCompetition(id);
     }
   };
+
+  const getOrganizerName = (id?: string) => users.find(u => u.id === id)?.name || 'N/A';
 
 
   return (
@@ -79,12 +88,12 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
           <table className="min-w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">County</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizer</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teams</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matches</th>
                 {(hasPermission('competitions:edit') || hasPermission('competitions:delete')) && (
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 )}
@@ -94,14 +103,16 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
               {competitions.map((comp) => (
                 <tr key={comp.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                     <img className="h-10 w-10 rounded-full object-cover" src={comp.logoUrl} alt={comp.name} />
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onClick={() => onViewCompetition(comp.id)} className="text-blue-600 hover:text-blue-800 hover:underline">
-                      {comp.name}
-                    </button>
+                    <div className="flex items-center">
+                       <img className="h-10 w-10 rounded-full object-cover mr-4" src={comp.logoUrl} alt={comp.name} />
+                       <button onClick={() => onViewCompetition(comp.id)} className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline">
+                        {comp.name}
+                       </button>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.season}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.county || 'N/A'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getOrganizerName(comp.organizerId)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                       comp.status === 'Ongoing' ? 'bg-green-100 text-green-800' :
@@ -110,7 +121,6 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
                     }`}>{comp.status}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.teamIds.length}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{matches.filter(m => m.competitionId === comp.id).length}</td>
                   {(hasPermission('competitions:edit') || hasPermission('competitions:delete')) && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                         {hasPermission('competitions:edit') && <button onClick={() => openEditModal(comp)} className="text-indigo-600 hover:text-indigo-900">Edit</button>}

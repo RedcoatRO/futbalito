@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
-import type { Regulation } from '../types';
-import Button from './ui/Button';
+import type { Regulation } from '../types.ts';
+import Button from './ui/Button.tsx';
 
 interface RegulationFormProps {
   regulation: Regulation;

@@ -1,10 +1,14 @@
 
+
 import React from 'react';
-import type { Page } from '../types';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import { EyeIcon, WrenchScrewdriverIcon, PencilSquareIcon, ArrowRightIcon } from '../components/icons/Icons';
-import { useCompetitions } from '../context/CompetitionContext';
+// FIX: Added .ts extension to module import.
+import type { Page } from '../types.ts';
+import Card from '../components/ui/Card.tsx';
+import Button from '../components/ui/Button.tsx';
+// FIX: Added .tsx extension to module import.
+import { EyeIcon, WrenchScrewdriverIcon, PencilSquareIcon, ArrowRightIcon } from '../components/icons/Icons.tsx';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
 
 interface DashboardProps {
     setPage: (page: Page) => void;

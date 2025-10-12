@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import type { Role, Permission } from '../types';
-import Button from './ui/Button';
+import type { Role, Permission } from '../types.ts';
+import Button from './ui/Button.tsx';
 
 // FIX: The inner objects are partial records, not full `Record<Permission, string>`.
 // Using `Partial` makes the type correct and provides type safety for permission keys.
@@ -14,18 +15,24 @@ const permissionGroups: Record<string, Partial<Record<Permission, string>>> = {
         'teams:delete': 'Delete Teams',
         'players:manage': 'Manage Players',
         'arenas:manage': 'Manage Arenas',
+        'referees:manage': 'Manage Referees',
+        'observers:manage': 'Manage Observers',
         'matches:manage_live': 'Manage Live Matches',
     },
     'Publishing': {
         'publish:manage_articles': 'Manage Articles',
         'publish:manage_media': 'Manage Media',
         'publish:manage_sponsors': 'Manage Sponsors',
+        'publish:manage_regulations': 'Manage Regulations',
         'publish:customize_sites': 'Customize Public Sites',
     },
     'Administration': {
         'settings:manage_organization': 'Manage Organization Settings',
+        'settings:manage_counties': 'Manage Counties',
         'users:invite': 'Invite & Manage Users',
         'users:manage_roles': 'Manage Roles & Permissions',
+        'organizers:manage': 'Manage Organizers',
+        'transfers:manage': 'Manage Transfers',
     },
 };
 

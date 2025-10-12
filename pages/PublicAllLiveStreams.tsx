@@ -1,8 +1,9 @@
+
 import React from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import { ShieldCheckIcon, ChevronLeftIcon, TvIcon } from '../components/icons/Icons';
-import PublicLiveStream from '../components/public/PublicLiveStream';
-import type { Match } from '../types';
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import { ShieldCheckIcon, ChevronLeftIcon, TvIcon } from '../components/icons/Icons.tsx';
+import PublicLiveStream from '../components/public/PublicLiveStream.tsx';
+import type { Match } from '../types.ts';
 
 interface PublicAllLiveStreamsProps {
   competitionId: string;

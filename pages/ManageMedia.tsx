@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import usePermissions from '../hooks/usePermissions';
-import Button from '../components/ui/Button';
-import Tabs from '../components/ui/Tabs';
-import { ChevronLeftIcon, PlusIcon, XMarkIcon } from '../components/icons/Icons';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import usePermissions from '../hooks/usePermissions.ts';
+import Button from '../components/ui/Button.tsx';
+import Tabs from '../components/ui/Tabs.tsx';
+import { ChevronLeftIcon, PlusIcon, XMarkIcon } from '../components/icons/Icons.tsx';
 
 interface ManageMediaProps {
   competitionId: string;

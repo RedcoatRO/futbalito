@@ -1,6 +1,10 @@
+
+
 import React, { useMemo } from 'react';
-import type { Match } from '../../types';
-import { useCompetitions } from '../../context/CompetitionContext';
+// FIX: Added .ts extension to module import.
+import type { Match } from '../../types.ts';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../../context/CompetitionContext.tsx';
 
 interface PublicScheduleProps {
   competitionId: string;

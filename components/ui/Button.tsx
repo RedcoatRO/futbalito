@@ -1,12 +1,28 @@
-
 import React from 'react';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// FIX: Refactored Button to be a polymorphic component. This allows it to be rendered
+// as different HTML elements (e.g., 'span') using the 'as' prop, which is necessary
+// for valid HTML when used inside a <label> element.
+type ButtonOwnProps<E extends React.ElementType = React.ElementType> = {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+  as?: E;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, className = '', variant = 'primary', ...props }) => {
+type ButtonProps<E extends React.ElementType> = ButtonOwnProps<E> &
+  Omit<React.ComponentProps<E>, keyof ButtonOwnProps>;
+
+const defaultElement = 'button';
+
+const Button = <E extends React.ElementType = typeof defaultElement>({
+  children,
+  className = '',
+  variant = 'primary',
+  as,
+  ...props
+}: ButtonProps<E>) => {
+  const Component = as || defaultElement;
+
   const baseStyles = 'inline-flex items-center justify-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150';
 
   const variantStyles = {
@@ -17,12 +33,12 @@ const Button: React.FC<ButtonProps> = ({ children, className = '', variant = 'pr
   };
 
   return (
-    <button
+    <Component
       className={`${baseStyles} ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}
-    </button>
+    </Component>
   );
 };
 

@@ -1,6 +1,7 @@
+
 import React from 'react';
-import { VideoCameraIcon } from '../icons/Icons';
-import type { Match } from '../../types';
+import { VideoCameraIcon } from '../icons/Icons.tsx';
+import type { Match } from '../../types.ts';
 
 interface PublicLiveStreamProps {
   match: Match;

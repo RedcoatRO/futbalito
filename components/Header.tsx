@@ -1,7 +1,12 @@
+
+
 import React, { useState, useRef, useEffect } from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import usePermissions from '../hooks/usePermissions';
-import { Bars3Icon, MagnifyingGlassIcon, ChevronDownIcon, UserIcon } from './icons/Icons';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+// FIX: Added .ts extension to module import.
+import usePermissions from '../hooks/usePermissions.ts';
+// FIX: Added .tsx extension to module import.
+import { Bars3Icon, MagnifyingGlassIcon, ChevronDownIcon, UserIcon } from './icons/Icons.tsx';
 
 interface HeaderProps {
   sidebarOpen: boolean;

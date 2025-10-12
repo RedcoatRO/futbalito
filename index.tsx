@@ -1,43 +1,15 @@
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import PublicSite from './pages/PublicSite';
-import PublicArticleDetail from './pages/PublicArticleDetail';
-import PublicGalleryDetail from './pages/PublicGalleryDetail';
-import PublicPortalSite from './pages/PublicPortalSite';
-import PublicAllLiveStreams from './pages/PublicAllLiveStreams';
-import { CompetitionProvider } from './context/CompetitionContext';
+// FIX: Add .tsx extension to module imports.
+import App from './App.tsx';
+import { CompetitionProvider } from './context/CompetitionContext.tsx';
+import './index.css';
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
-}
-
-const root = ReactDOM.createRoot(rootElement);
-
-const urlParams = new URLSearchParams(window.location.search);
-const publicCompetitionId = urlParams.get('publicCompetitionId');
-const publicArticleId = urlParams.get('articleId');
-const publicGalleryId = urlParams.get('galleryId');
-const isPortal = urlParams.get('portal') === 'true';
-const view = urlParams.get('view');
-
-root.render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <CompetitionProvider>
-      {isPortal ? (
-        <PublicPortalSite />
-      ) : publicCompetitionId ? (
-          view === 'live' ? (
-          <PublicAllLiveStreams competitionId={publicCompetitionId} />
-        ) : publicArticleId ? (
-          <PublicArticleDetail competitionId={publicCompetitionId} articleId={publicArticleId} />
-        ) : publicGalleryId ? (
-          <PublicGalleryDetail competitionId={publicCompetitionId} galleryId={publicGalleryId} />
-        ) : (
-          <PublicSite competitionId={publicCompetitionId} />
-        )
-      ) : <App />}
+      <App />
     </CompetitionProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

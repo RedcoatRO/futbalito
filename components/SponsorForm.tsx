@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import type { Sponsor } from '../types';
-import Button from './ui/Button';
+import type { Sponsor } from '../types.ts';
+import Button from './ui/Button.tsx';
 
 interface SponsorFormProps {
   sponsor?: Sponsor | null;

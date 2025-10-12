@@ -1,6 +1,8 @@
+
 import React from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import { ShieldCheckIcon, ChevronLeftIcon } from '../components/icons/Icons';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import { ShieldCheckIcon, ChevronLeftIcon } from '../components/icons/Icons.tsx';
 
 interface PublicGalleryDetailProps {
   competitionId: string;

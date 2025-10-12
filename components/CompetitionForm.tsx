@@ -1,7 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
-import type { Competition } from '../types';
-import Button from './ui/Button';
-import { useCompetitions } from '../context/CompetitionContext';
+// FIX: Added .ts extension to module import.
+import type { Competition } from '../types.ts';
+import Button from './ui/Button.tsx';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
 
 interface CompetitionFormProps {
   competition?: Competition | null;
@@ -9,8 +12,16 @@ interface CompetitionFormProps {
   onClose: () => void;
 }
 
+const romanianCounties = [
+  "Alba", "Arad", "Argeș", "Bacău", "Bihor", "Bistrița-Năsăud", "Botoșani", "Brașov", "Brăila",
+  "București", "Buzău", "Caraș-Severin", "Călărași", "Cluj", "Constanța", "Covasna", "Dâmbovița",
+  "Dolj", "Galați", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Ialomița", "Iași", "Ilfov",
+  "Maramureș", "Mehedinți", "Mureș", "Neamț", "Olt", "Prahova", "Satu Mare", "Sălaj", "Sibiu",
+  "Suceava", "Teleorman", "Timiș", "Tulcea", "Vaslui", "Vâlcea", "Vrancea"
+];
+
 const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, onClose }) => {
-  const { arenas } = useCompetitions();
+  const { arenas, users } = useCompetitions();
   const [name, setName] = useState('');
   const [season, setSeason] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -21,6 +32,8 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
   const [teamsPerGroup, setTeamsPerGroup] = useState(4);
   const [defaultArenaId, setDefaultArenaId] = useState<string | undefined>(undefined);
   const [isPublic, setIsPublic] = useState(false);
+  const [county, setCounty] = useState<string | undefined>(undefined);
+  const [organizerId, setOrganizerId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (competition) {
@@ -32,8 +45,10 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
       setTeamsPerGroup(competition.teamsPerGroup ?? 4);
       setDefaultArenaId(competition.defaultArenaId);
       setIsPublic(competition.isPublic ?? false);
+      setCounty(competition.county);
+      setOrganizerId(competition.organizerId);
     } else {
-      setName(''); setSeason(''); setPreviewUrl(null); setFormat('league'); setTwoLegged(false); setTeamsPerGroup(4); setDefaultArenaId(undefined); setIsPublic(false);
+      setName(''); setSeason(''); setPreviewUrl(null); setFormat('league'); setTwoLegged(false); setTeamsPerGroup(4); setDefaultArenaId(undefined); setIsPublic(false); setCounty(undefined); setOrganizerId(undefined);
     }
     setLogoFile(null); setError('');
   }, [competition]);
@@ -52,12 +67,12 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
       setError('Name and season are required.');
       return;
     }
-    onSave({ name, season, logoFile, format, twoLegged, teamsPerGroup, defaultArenaId, isPublic });
+    onSave({ name, season, logoFile, format, twoLegged, teamsPerGroup, defaultArenaId, isPublic, county, organizerId });
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="p-6 space-y-4">
+      <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
         <div>
           <label className="block text-sm font-medium text-gray-700">Logo</label>
           <div className="mt-1 flex items-center space-x-4">
@@ -67,6 +82,24 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
         </div>
         <div><label htmlFor="name" className="block text-sm font-medium">Name</label><input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1 block w-full border rounded-md p-2" /></div>
         <div><label htmlFor="season" className="block text-sm font-medium">Season</label><input type="text" id="season" value={season} onChange={(e) => setSeason(e.target.value)} className="mt-1 block w-full border rounded-md p-2" /></div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label htmlFor="county" className="block text-sm font-medium text-gray-700">County / Region</label>
+              <select id="county" value={county || ''} onChange={e => setCounty(e.target.value || undefined)} className="mt-1 block w-full border rounded-md p-2">
+                  <option value="">None</option>
+                  {romanianCounties.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="organizer" className="block text-sm font-medium text-gray-700">Organizer</label>
+              <select id="organizer" value={organizerId || ''} onChange={e => setOrganizerId(e.target.value || undefined)} className="mt-1 block w-full border rounded-md p-2">
+                  <option value="">None</option>
+                  {users.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}
+              </select>
+            </div>
+        </div>
+        
         <div>
           <label htmlFor="defaultArena" className="block text-sm font-medium text-gray-700">Default Arena</label>
           <select id="defaultArena" value={defaultArenaId || ''} onChange={e => setDefaultArenaId(e.target.value || undefined)} className="mt-1 block w-full border rounded-md p-2">

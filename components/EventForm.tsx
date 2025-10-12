@@ -1,8 +1,13 @@
+
+
 import React, { useState, useEffect } from 'react';
-import type { Match, MatchEvent, Player } from '../types';
-import { MatchEventType } from '../types';
-import Button from './ui/Button';
-import { useCompetitions } from '../context/CompetitionContext';
+// FIX: Added .ts extension to module import.
+import type { Match, MatchEvent, Player } from '../types.ts';
+// FIX: Added .ts extension to module import.
+import { MatchEventType } from '../types.ts';
+import Button from './ui/Button.tsx';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
 
 interface EventFormProps {
   event?: MatchEvent | null;

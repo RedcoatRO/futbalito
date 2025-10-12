@@ -1,7 +1,11 @@
+
+
 import React, { useState, useEffect } from 'react';
-import type { Arena } from '../types';
-import Button from './ui/Button';
-import { PlusIcon, XMarkIcon } from './icons/Icons';
+// FIX: Added .ts extension to module import.
+import type { Arena } from '../types.ts';
+import Button from './ui/Button.tsx';
+// FIX: Added .tsx extension to module import.
+import { PlusIcon, XMarkIcon } from './icons/Icons.tsx';
 
 interface ArenaFormProps {
   arena?: Arena | null;

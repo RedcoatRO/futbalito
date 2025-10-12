@@ -1,6 +1,7 @@
+
 import React, { useMemo, useState } from 'react';
-import { useCompetitions } from '../../context/CompetitionContext';
-import type { Player } from '../../types';
+import { useCompetitions } from '../../context/CompetitionContext.tsx';
+import type { Player } from '../../types.ts';
 
 interface PublicPlayerStatsProps {
   competitionId: string;

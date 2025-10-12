@@ -1,11 +1,17 @@
+
+
 import React, { useState } from 'react';
-import type { Arena } from '../types';
-import Button from '../components/ui/Button';
-import Modal from '../components/ui/Modal';
-import ArenaForm from '../components/ArenaForm';
-import { PlusIcon } from '../components/icons/Icons';
-import { useCompetitions } from '../context/CompetitionContext';
-import usePermissions from '../hooks/usePermissions';
+// FIX: Added .ts extension to module import.
+import type { Arena } from '../types.ts';
+import Button from '../components/ui/Button.tsx';
+import Modal from '../components/ui/Modal.tsx';
+import ArenaForm from '../components/ArenaForm.tsx';
+// FIX: Added .tsx extension to module import.
+import { PlusIcon } from '../components/icons/Icons.tsx';
+// FIX: Added .tsx extension to module import.
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+// FIX: Added .ts extension to module import.
+import usePermissions from '../hooks/usePermissions.ts';
 
 const ManageArenas: React.FC = () => {
   const { arenas, addArena, updateArena, deleteArena } = useCompetitions();
