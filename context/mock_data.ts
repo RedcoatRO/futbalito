@@ -34,7 +34,9 @@ export const MOCK_TEAMS: Team[] = [
     { id: 'team-1', name: 'FC North', logoUrl: 'https://i.imgur.com/f3je5I4.png', country: 'Romania' },
     { id: 'team-2', name: 'South United', logoUrl: 'https://i.imgur.com/J3523a0.png', country: 'Romania' },
     { id: 'team-3', name: 'East Albion', logoUrl: 'https://i.imgur.com/2s7sU3N.png', country: 'Romania' },
-    { id: 'team-4', name: 'West Wanderers', logoUrl: 'https://i.imgur.com/e3B3wVv.png', country: 'Romania' }
+    { id: 'team-4', name: 'West Wanderers', logoUrl: 'https://i.imgur.com/e3B3wVv.png', country: 'Romania' },
+    // Add a new team for the second competition
+    { id: 'team-5', name: 'Central City', logoUrl: 'https://i.imgur.com/O6pva2e.png', country: 'Romania' },
 ];
 
 export const MOCK_PLAYERS: Player[] = [
@@ -42,12 +44,18 @@ export const MOCK_PLAYERS: Player[] = [
     { id: 'player-2', name: 'Mihai Ionescu', teamId: 'team-1', stats: { goals: 2, assists: 4, yellowCards: 0, redCards: 0 } },
     { id: 'player-3', name: 'Andrei Vasile', teamId: 'team-2', stats: { goals: 6, assists: 1, yellowCards: 2, redCards: 1 } },
     { id: 'player-4', name: 'Gheorghe Radu', teamId: 'team-2', stats: { goals: 1, assists: 1, yellowCards: 0, redCards: 0 } },
+    // Add a player for the new team
+    { id: 'player-5', name: 'Cristian Manea', teamId: 'team-5', stats: { goals: 3, assists: 3, yellowCards: 0, redCards: 0 } },
 ];
 
 export const MOCK_MATCHES: Match[] = [
     { id: 'match-1', competitionId: 'comp-1', homeTeam: MOCK_TEAMS[0], awayTeam: MOCK_TEAMS[1], date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), status: 'Finished', homeScore: 2, awayScore: 1, events: [], stage: 'Round 1' },
     { id: 'match-2', competitionId: 'comp-1', homeTeam: MOCK_TEAMS[2], awayTeam: MOCK_TEAMS[3], date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), status: 'Finished', homeScore: 0, awayScore: 0, events: [], stage: 'Round 1' },
     { id: 'match-3', competitionId: 'comp-1', homeTeam: MOCK_TEAMS[0], awayTeam: MOCK_TEAMS[2], date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(), status: 'Not Started', homeScore: 0, awayScore: 0, events: [], stage: 'Round 2', liveStreamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+    // Add more matches for testing
+    { id: 'match-4', competitionId: 'comp-2', homeTeam: MOCK_TEAMS[1], awayTeam: MOCK_TEAMS[4], date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), status: 'Finished', homeScore: 3, awayScore: 3, events: [], stage: 'Semi-Final' },
+    { id: 'match-5', competitionId: 'comp-1', homeTeam: MOCK_TEAMS[1], awayTeam: MOCK_TEAMS[3], date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), status: 'Not Started', homeScore: 0, awayScore: 0, events: [], stage: 'Round 2' },
+    { id: 'match-6', competitionId: 'comp-2', homeTeam: MOCK_TEAMS[0], awayTeam: MOCK_TEAMS[2], date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), status: 'Not Started', homeScore: 0, awayScore: 0, events: [], stage: 'Final' },
 ];
 
 export const MOCK_COMPETITIONS: Competition[] = [
@@ -69,7 +77,25 @@ export const MOCK_COMPETITIONS: Competition[] = [
         regulations: [],
         committee: [{ id: 'cm-1', name: 'John Chairman', role: 'President' }]
     } },
-    { id: 'comp-2', name: 'Cupa Romaniei', season: '2024', logoUrl: 'https://i.imgur.com/nJ4a5bV.png', status: 'Upcoming', teamIds: [], format: 'cup', isPublic: false }
+    // Make Cup public for portal testing
+    { id: 'comp-2', name: 'Cupa Romaniei', season: '2024', logoUrl: 'https://i.imgur.com/nJ4a5bV.png', status: 'Ongoing', teamIds: ['team-1', 'team-2', 'team-3', 'team-4', 'team-5'], format: 'cup', isPublic: true, publicConfig: {
+        title: 'Cupa Romaniei Official',
+        logoUrl: 'https://i.imgur.com/nJ4a5bV.png',
+        primaryColor: '#c8102e',
+        backgroundColor: '#ffffff',
+        showRankings: false,
+        showSchedule: true,
+        showPlayerStats: false,
+        showArticles: true,
+        showGalleries: true,
+        showSponsors: true,
+        showRegulations: false,
+        showLiveStream: false,
+        featuredLiveMatchIds: [],
+        announcements: [],
+        regulations: [],
+        committee: []
+    }}
 ];
 
 export const MOCK_ARENAS: Arena[] = [{ id: 'arena-1', name: 'National Arena', location: 'Bucharest', fields: ['Main Field'] }];

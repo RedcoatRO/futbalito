@@ -1,8 +1,9 @@
-
 import React from 'react';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import { ShieldCheckIcon, ChevronLeftIcon } from '../components/icons/Icons.tsx';
+// Import new shared components
+import PublicHeader from '../components/public/PublicHeader.tsx';
 
 interface PublicGalleryDetailProps {
   competitionId: string;
@@ -31,12 +32,11 @@ const PublicGalleryDetail: React.FC<PublicGalleryDetailProps> = ({ competitionId
 
   return (
     <div style={{ backgroundColor: publicConfig.backgroundColor }} className="min-h-screen font-sans">
-      <header className="p-6">
-        <div className="container mx-auto flex items-center">
-            <img src={publicConfig.logoUrl} alt="Logo" className="h-12 w-12 rounded-full object-cover"/>
-            <h2 className="ml-4 text-xl font-bold" style={{ color: publicConfig.primaryColor }}>{publicConfig.title}</h2>
-        </div>
-      </header>
+      <PublicHeader 
+        logoUrl={publicConfig.logoUrl}
+        title={publicConfig.title}
+        primaryColor={publicConfig.primaryColor}
+      />
       <main className="container mx-auto py-12 px-6">
         <a href={backUrl} className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 mb-8">
             <ChevronLeftIcon className="h-5 w-5 mr-1" />

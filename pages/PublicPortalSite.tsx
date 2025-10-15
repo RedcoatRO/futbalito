@@ -1,18 +1,54 @@
-import React, { useState } from 'react';
-import { useCompetitions } from '../context/CompetitionContext';
-import { ShieldCheckIcon } from '../components/icons/Icons';
-import PublicRankings from '../components/public/PublicRankings';
-import PublicSchedule from '../components/public/PublicSchedule';
-import PublicArticlesList from '../components/public/PublicArticlesList';
-import PublicGalleriesList from '../components/public/PublicGalleriesList';
-import PublicSponsors from '../components/public/PublicSponsors';
-import PublicPlayerStats from '../components/public/PublicPlayerStats';
-import Tabs from '../components/ui/Tabs';
+import React, { useMemo } from 'react';
+import { useCompetitions } from '../context/CompetitionContext.tsx';
+import { ShieldCheckIcon } from '../components/icons/Icons.tsx';
+
+// Import new components for the portal homepage
+import PublicHeader from '../components/public/PublicHeader.tsx';
+import HeroSection from '../components/public/HeroSection.tsx';
+import CompetitionList from '../components/public/CompetitionList.tsx';
+import MatchTicker from '../components/public/MatchTicker.tsx';
 
 const PublicPortalSite: React.FC = () => {
-  const { competitions, portalConfig } = useCompetitions();
-  const publicCompetitions = competitions.filter(c => c.isPublic);
-  const [activeCompetitionId, setActiveCompetitionId] = useState(publicCompetitions[0]?.id || null);
+  const { competitions, portalConfig, matches, articles } = useCompetitions();
+
+  // Memoize all data fetching and filtering for performance
+  const publicCompetitions = useMemo(() => competitions.filter(c => c.isPublic), [competitions]);
+  
+  const aggregatedData = useMemo(() => {
+    if (publicCompetitions.length === 0) {
+      return {
+        heroArticle: null,
+        recentMatches: [],
+        upcomingMatches: [],
+      };
+    }
+
+    const publicCompetitionIds = publicCompetitions.map(c => c.id);
+
+    // Find the latest published article from any public competition
+    const heroArticle = articles
+      .filter(a => publicCompetitionIds.includes(a.competitionId) && a.status === 'published')
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0] || null;
+
+    // Aggregate matches from all public competitions
+    const allPublicMatches = matches.filter(m => publicCompetitionIds.includes(m.competitionId));
+    const now = new Date();
+
+    // Get the 3 most recently finished matches
+    const recentMatches = allPublicMatches
+      .filter(m => m.status === 'Finished' && new Date(m.date) < now)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 3);
+      
+    // Get the next 3 upcoming matches
+    const upcomingMatches = allPublicMatches
+      .filter(m => m.status !== 'Finished' && new Date(m.date) >= now)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 3);
+
+    return { heroArticle, recentMatches, upcomingMatches };
+  }, [publicCompetitions, matches, articles]);
+
 
   if (!portalConfig || publicCompetitions.length === 0) {
     return (
@@ -26,47 +62,26 @@ const PublicPortalSite: React.FC = () => {
   }
 
   const { title, logoUrl, primaryColor, backgroundColor } = portalConfig;
-  const activeCompetition = competitions.find(c => c.id === activeCompetitionId);
 
   return (
     <div style={{ backgroundColor }} className="min-h-screen font-sans">
-      <header className="p-6 border-b" style={{ borderColor: 'rgba(0,0,0,0.08)'}}>
-        <div className="container mx-auto flex justify-between items-center">
-            <div className="flex items-center">
-              <img src={logoUrl} alt="Logo" className="h-12 w-12 rounded-full object-cover"/>
-              <h2 className="ml-4 text-xl font-bold" style={{ color: primaryColor }}>{title}</h2>
-            </div>
-        </div>
-      </header>
+      <PublicHeader 
+        logoUrl={logoUrl}
+        title={title}
+        primaryColor={primaryColor}
+      />
       <main>
         <div className="container mx-auto py-12 px-6">
-            <div className="bg-white rounded-lg shadow-xl p-6">
-                 <Tabs 
-                    tabs={publicCompetitions.map(c => c.name)}
-                    activeTab={activeCompetition?.name || ''}
-                    setActiveTab={(tabName) => {
-                        const newComp = publicCompetitions.find(c => c.name === tabName);
-                        if(newComp) setActiveCompetitionId(newComp.id);
-                    }}
-                 />
-                 <div className="py-10">
-                    {activeCompetition && activeCompetition.publicConfig ? (
-                        <div className="space-y-20">
-                            {activeCompetition.publicConfig.showArticles && <div id="news"><PublicArticlesList competitionId={activeCompetition.id} /></div>}
-                            {activeCompetition.publicConfig.showGalleries && <div id="galleries"><PublicGalleriesList competitionId={activeCompetition.id} /></div>}
-                            {activeCompetition.publicConfig.showSponsors && <div id="sponsors"><PublicSponsors competitionId={activeCompetition.id} /></div>}
-                            {activeCompetition.publicConfig.showRankings && (activeCompetition.format === 'league' || activeCompetition.format === 'mixed') && <div id="rankings"><PublicRankings competitionId={activeCompetition.id} /></div>}
-                            {activeCompetition.publicConfig.showSchedule && <div id="schedule"><PublicSchedule competitionId={activeCompetition.id} /></div>}
-                            {activeCompetition.publicConfig.showPlayerStats && <div id="stats"><PublicPlayerStats competitionId={activeCompetition.id} /></div>}
-                        </div>
-                    ) : (
-                        <p className="text-center text-gray-500 py-12">This competition has no public content configured.</p>
-                    )}
-                 </div>
-            </div>
+          <HeroSection heroArticle={aggregatedData.heroArticle} />
+          <CompetitionList competitions={publicCompetitions} />
+          <MatchTicker 
+            recentMatches={aggregatedData.recentMatches}
+            upcomingMatches={aggregatedData.upcomingMatches}
+            competitions={publicCompetitions}
+          />
         </div>
       </main>
-      <footer className="py-8 mt-12 border-t" style={{ borderColor: 'rgba(0,0,0,0.1)'}}>
+      <footer className="py-8 mt-12 border-t" style={{ borderColor: 'rgba(0,0,0,0.1)' }}>
         <div className="container mx-auto text-center text-gray-500 flex items-center justify-center">
             <ShieldCheckIcon className="h-5 w-5 mr-2 text-gray-400"/>
             Powered by Futbalito

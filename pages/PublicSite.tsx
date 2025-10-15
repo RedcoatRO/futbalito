@@ -1,7 +1,9 @@
-
 import React from 'react';
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import { ShieldCheckIcon } from '../components/icons/Icons.tsx';
+// Re-usable public components
+import PublicHeader from '../components/public/PublicHeader.tsx';
+// Page-specific components
 import PublicRankings from '../components/public/PublicRankings.tsx';
 import PublicSchedule from '../components/public/PublicSchedule.tsx';
 import PublicArticlesList from '../components/public/PublicArticlesList.tsx';
@@ -32,6 +34,7 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
   }
 
   const { publicConfig } = competition;
+  // Navigation items specific to this competition's site
   const navItems = [
     { name: 'News', href: '#news', show: publicConfig.showArticles },
     { name: 'Rankings', href: '#rankings', show: publicConfig.showRankings && (competition.format === 'league' || competition.format === 'mixed') },
@@ -39,24 +42,16 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
     { name: 'Stats', href: '#stats', show: publicConfig.showPlayerStats },
     { name: 'Galleries', href: '#galleries', show: publicConfig.showGalleries },
     { name: 'Regulations', href: '#regulations', show: publicConfig.showRegulations },
-    { name: 'Sponsors', href: '#sponsors', show: publicConfig.showSponsors },
   ].filter(item => item.show);
 
   return (
     <div style={{ backgroundColor: publicConfig.backgroundColor }} className="min-h-screen font-sans">
-      <header className="p-6 border-b" style={{ borderColor: 'rgba(0,0,0,0.08)'}}>
-        <div className="container mx-auto flex justify-between items-center">
-            <div className="flex items-center">
-              <img src={publicConfig.logoUrl} alt="Logo" className="h-12 w-12 rounded-full object-cover"/>
-              <h2 className="ml-4 text-xl font-bold" style={{ color: publicConfig.primaryColor }}>{publicConfig.title}</h2>
-            </div>
-            <nav className="hidden md:flex space-x-6">
-              {navItems.map(item => (
-                <a key={item.name} href={item.href} className="text-sm font-semibold text-gray-600 hover:text-gray-900">{item.name}</a>
-              ))}
-            </nav>
-        </div>
-      </header>
+      <PublicHeader 
+        logoUrl={publicConfig.logoUrl}
+        title={publicConfig.title}
+        primaryColor={publicConfig.primaryColor}
+        navItems={navItems}
+      />
       <main>
         <div className="container mx-auto py-12 px-6 space-y-20">
             <PublicAnnouncements competitionId={competitionId} />
@@ -70,7 +65,7 @@ const PublicSite: React.FC<PublicSiteProps> = ({ competitionId }) => {
             {publicConfig.showSponsors && <div id="sponsors"><PublicSponsors competitionId={competitionId} /></div>}
         </div>
       </main>
-      <footer className="py-8 mt-12 border-t" style={{ borderColor: 'rgba(0,0,0,0.1)'}}>
+       <footer className="py-8 mt-12 border-t" style={{ borderColor: 'rgba(0,0,0,0.1)'}}>
         <div className="container mx-auto text-center text-gray-500 flex flex-col items-center justify-center space-y-6">
             {publicConfig.showSponsors && <PublicSponsors competitionId={competitionId} isFooter />}
             <div className="flex items-center">
