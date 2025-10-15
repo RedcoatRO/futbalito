@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import Sidebar from './components/Sidebar.tsx';
 import Header from './components/Header.tsx';
@@ -33,8 +32,13 @@ import PublicAllLiveStreams from './pages/PublicAllLiveStreams.tsx';
 import PublicPortalSite from './pages/PublicPortalSite.tsx';
 import PublicTeamDetail from './pages/PublicTeamDetail.tsx';
 import PublicNationalTeam from './pages/PublicNationalTeam.tsx';
-// FIX: Import PortalBuilder component to resolve 'Cannot find name' error.
 import PortalBuilder from './pages/PortalBuilder.tsx';
+
+// Import new aggregated portal pages
+import PublicAllNews from './pages/PublicAllNews.tsx';
+import PublicAllMatches from './pages/PublicAllMatches.tsx';
+import PublicGlobalStats from './pages/PublicGlobalStats.tsx';
+import PublicAllGalleries from './pages/PublicAllGalleries.tsx';
 
 import type { Page } from './types.ts';
 
@@ -47,6 +51,7 @@ const App: React.FC = () => {
     const galleryId = queryParams.get('galleryId');
     const liveView = queryParams.get('view') === 'live';
     const isPortal = queryParams.get('portal') === 'true';
+    const portalPage = queryParams.get('portal_page'); // New parameter for portal sub-pages
     const isPublicTeam = queryParams.get('teamId');
     const isPublicNational = queryParams.get('nationalTeam');
 
@@ -67,8 +72,15 @@ const App: React.FC = () => {
     if (isPublicTeam) {
         return <PublicTeamDetail />;
     }
+    // New routing for aggregated portal pages
     if (isPortal) {
-        return <PublicPortalSite />;
+        switch (portalPage) {
+            case 'news': return <PublicAllNews />;
+            case 'matches': return <PublicAllMatches />;
+            case 'stats': return <PublicGlobalStats />;
+            case 'galleries': return <PublicAllGalleries />;
+            default: return <PublicPortalSite />;
+        }
     }
     if (publicCompetitionId) {
         if (articleId) {

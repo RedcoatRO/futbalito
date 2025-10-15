@@ -9,8 +9,9 @@ type ButtonOwnProps<E extends React.ElementType = React.ElementType> = {
   as?: E;
 }
 
+// FIX: Changed to use ComponentPropsWithoutRef for better type safety with polymorphic components.
 type ButtonProps<E extends React.ElementType> = ButtonOwnProps<E> &
-  Omit<React.ComponentProps<E>, keyof ButtonOwnProps<E>>;
+  Omit<React.ComponentPropsWithoutRef<E>, keyof ButtonOwnProps<E>>;
 
 const defaultElement = 'button';
 

@@ -63,12 +63,23 @@ const PublicPortalSite: React.FC = () => {
 
   const { title, logoUrl, primaryColor, backgroundColor } = portalConfig;
 
+  // Define the main navigation for the entire portal
+  const portalNavItems = [
+    { name: 'Home', href: '/?portal=true' },
+    { name: 'News', href: '/?portal=true&portal_page=news' },
+    { name: 'Matches', href: '/?portal=true&portal_page=matches' },
+    { name: 'Stats', href: '/?portal=true&portal_page=stats' },
+    { name: 'Galleries', href: '/?portal=true&portal_page=galleries' },
+  ];
+
   return (
     <div style={{ backgroundColor }} className="min-h-screen font-sans">
       <PublicHeader 
         logoUrl={logoUrl}
         title={title}
         primaryColor={primaryColor}
+        navItems={portalNavItems}
+        activePage="Home"
       />
       <main>
         <div className="container mx-auto py-12 px-6">
