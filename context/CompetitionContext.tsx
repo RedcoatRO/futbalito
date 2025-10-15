@@ -1,6 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+// FIX: Added .ts extension to module import to resolve module resolution error.
 import type { Competition, Team, Match, Standing, Player, Arena, User, Role, OrganizationSettings, Invoice, AuditLog, Sanction, Referee, Observer, Article, MediaImage, Gallery, Sponsor, PublicConfig, Regulation, Transfer, PlayerRegistration, County, CommitteeMember, Announcement, PortalConfig } from '../types.ts';
+// FIX: Added .ts extension to module import to resolve module resolution error.
 import { MOCK_COMPETITIONS, MOCK_TEAMS, MOCK_MATCHES, MOCK_PLAYERS, MOCK_ARENAS, MOCK_USERS, MOCK_ROLES, MOCK_ORGANIZATION_SETTINGS, MOCK_INVOICES, MOCK_AUDIT_LOG, MOCK_SANCTIONS, MOCK_REFEREES, MOCK_OBSERVERS, MOCK_ARTICLES, MOCK_MEDIA_IMAGES, MOCK_GALLERIES, MOCK_SPONSORS, MOCK_TRANSFERS, MOCK_PLAYER_REGISTRATIONS, MOCK_COUNTIES, MOCK_PORTAL_CONFIG } from './mock_data.ts';
 import { generateBergerTable } from '../utils/bergerTable.ts';
 
@@ -38,7 +40,7 @@ interface CompetitionContextType {
   updateCompetition: (data: Competition & { logoFile?: File | null }) => void;
   deleteCompetition: (id: string) => void;
   addTeam: (data: any) => void;
-  updateTeam: (data: Team) => void;
+  updateTeam: (data: Team & { logoFile?: File | null }) => void;
   deleteTeam: (id: string) => void;
   addPlayer: (data: any) => void;
   updatePlayer: (data: Player) => void;
@@ -172,10 +174,11 @@ export const CompetitionProvider: React.FC<{ children: React.ReactNode }> = ({ c
         setTeams(prev => [...prev, newTeam]);
     };
     const updateTeam = (data: Team & { logoFile?: File | null }) => {
-        if (data.logoFile) {
-            data.logoUrl = URL.createObjectURL(data.logoFile);
+        const teamToUpdate = {...data};
+        if (teamToUpdate.logoFile) {
+            teamToUpdate.logoUrl = URL.createObjectURL(teamToUpdate.logoFile);
         }
-        setTeams(prev => prev.map(t => t.id === data.id ? { id: t.id, name: data.name, country: data.country, logoUrl: data.logoUrl } : t));
+        setTeams(prev => prev.map(t => t.id === teamToUpdate.id ? { id: t.id, name: teamToUpdate.name, country: teamToUpdate.country, logoUrl: teamToUpdate.logoUrl } : t));
     };
     const deleteTeam = (id: string) => setTeams(prev => prev.filter(t => t.id !== id));
     

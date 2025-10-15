@@ -1,7 +1,9 @@
 
+
 import React, { useState } from 'react';
 // FIX: Added .ts extension to module import.
 import type { Sponsor } from '../types.ts';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
 import Modal from '../components/ui/Modal.tsx';
 import SponsorForm from '../components/SponsorForm.tsx';
@@ -74,31 +76,25 @@ const ManageSponsors: React.FC<ManageSponsorsProps> = ({ competitionId, onBack }
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sponsor</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
-                {canManageSponsors && (
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                )}
+                {canManageSponsors && <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {competitionSponsors.map((sponsor) => (
+              {competitionSponsors.map(sponsor => (
                 <tr key={sponsor.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                          <img className="h-10 w-20 object-contain bg-gray-100 p-1 rounded" src={sponsor.logoUrl} alt={sponsor.name} />
-                          <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{sponsor.name}</div>
-                          </div>
-                      </div>
+                    <div className="flex items-center">
+                      <img src={sponsor.logoUrl} alt={sponsor.name} className="h-10 w-24 object-contain mr-4" />
+                      <span className="font-medium text-gray-900">{sponsor.name}</span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <a href={sponsor.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {sponsor.websiteUrl}
-                      </a>
+                    <a href={sponsor.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{sponsor.websiteUrl}</a>
                   </td>
                   {canManageSponsors && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                        <button onClick={() => openEditModal(sponsor)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
-                        <button onClick={() => handleDelete(sponsor.id)} className="text-red-600 hover:text-red-900">Delete</button>
+                      <button onClick={() => openEditModal(sponsor)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                      <button onClick={() => handleDelete(sponsor.id)} className="text-red-600 hover:text-red-900">Delete</button>
                     </td>
                   )}
                 </tr>
@@ -107,8 +103,8 @@ const ManageSponsors: React.FC<ManageSponsorsProps> = ({ competitionId, onBack }
           </table>
         </div>
       </div>
-      
-      <Modal isOpen={isModalOpen} onClose={closeModal} title={editingSponsor ? 'Edit Sponsor' : 'Add New Sponsor'}>
+
+       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingSponsor ? 'Edit Sponsor' : 'Add New Sponsor'}>
         <SponsorForm 
           sponsor={editingSponsor}
           onSave={handleSave}

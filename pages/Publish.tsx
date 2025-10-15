@@ -1,6 +1,7 @@
 
 
 import React from 'react';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';

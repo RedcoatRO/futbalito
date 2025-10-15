@@ -3,6 +3,7 @@ import React from 'react';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import usePermissions from '../hooks/usePermissions.ts';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
 import { ChevronLeftIcon, PlusIcon } from '../components/icons/Icons.tsx';
 // FIX: Added .ts extension to module import.

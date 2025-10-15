@@ -10,6 +10,7 @@ import PublicArticlesList from '../components/public/PublicArticlesList.tsx';
 import PublicGalleriesList from '../components/public/PublicGalleriesList.tsx';
 import PublicSponsors from '../components/public/PublicSponsors.tsx';
 import PublicPlayerStats from '../components/public/PublicPlayerStats.tsx';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import PublicSanctions from '../components/public/PublicSanctions.tsx';
 import PublicRegulations from '../components/public/PublicRegulations.tsx';
 import PublicAnnouncements from '../components/public/PublicAnnouncements.tsx';

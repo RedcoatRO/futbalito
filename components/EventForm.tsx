@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import type { Match, MatchEvent, Player } from '../types.ts';
 // FIX: Added .ts extension to module import.
 import { MatchEventType } from '../types.ts';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from './ui/Button.tsx';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';

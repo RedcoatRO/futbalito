@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 // FIX: Added .ts extension to module import.
 import type { Team } from '../types.ts';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from './ui/Button.tsx';
 
 interface TeamFormProps {

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 // FIX: Added .ts extension to module import.
 import type { Arena } from '../types.ts';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from './ui/Button.tsx';
 // FIX: Added .tsx extension to module import.
 import { PlusIcon, XMarkIcon } from './icons/Icons.tsx';

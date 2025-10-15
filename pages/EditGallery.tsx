@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
 import { ChevronLeftIcon } from '../components/icons/Icons.tsx';
 // FIX: Added .ts extension to module import.

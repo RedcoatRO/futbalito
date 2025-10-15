@@ -1,7 +1,9 @@
 
+
 import React from 'react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
+import Card from '../components/ui/Card.tsx';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
+import Button from '../components/ui/Button.tsx';
 
 const Marketplace: React.FC = () => {
     return (

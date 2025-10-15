@@ -4,6 +4,7 @@ import React from 'react';
 // FIX: Added .ts extension to module import.
 import type { Page } from '../types.ts';
 import Card from '../components/ui/Card.tsx';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
 // FIX: Added .tsx extension to module import.
 import { EyeIcon, WrenchScrewdriverIcon, PencilSquareIcon, ArrowRightIcon } from '../components/icons/Icons.tsx';

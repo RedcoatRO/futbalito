@@ -6,6 +6,7 @@ import { useCompetitions } from '../context/CompetitionContext.tsx';
 // FIX: Added .ts extension to module import.
 import type { Page, Team, Sanction } from '../types.ts';
 import Card from '../components/ui/Card.tsx';
+// FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
 import Tabs from '../components/ui/Tabs.tsx';
 import Modal from '../components/ui/Modal.tsx';

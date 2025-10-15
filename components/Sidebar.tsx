@@ -2,6 +2,7 @@
 import React from 'react';
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import usePermissions from '../hooks/usePermissions.ts';
+// FIX: Added .ts extension to module import to resolve module resolution error.
 import type { Page } from '../types.ts';
 import {
   ChartPieIcon, EyeIcon, WrenchScrewdriverIcon, UsersIcon,

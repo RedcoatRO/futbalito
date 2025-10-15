@@ -1,8 +1,8 @@
 import React from 'react';
 
 // This component is not yet implemented.
-const MatchTicker: React.FC = () => {
+const Toast: React.FC = () => {
     return null;
 };
 
-export default MatchTicker;
+export default Toast;
