@@ -1,16 +1,16 @@
-
-import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { 
     Team, Competition, Match, Player, OrganizationSettings, User, Role,
     Invoice, AuditLog, County, Arena, Sanction, Referee, Observer,
     Article, MediaImage, Gallery, Sponsor, Transfer, PlayerRegistration,
-    Standing, MatchEventType, PortalConfig, PublicConfig
+    Standing, PortalConfig, PublicConfig, NationalTeam, NationalSquadPlayer, Comment
 } from '../types.ts';
 import { 
     mockTeams, mockCompetitions, mockMatches, mockPlayers, mockOrganizationSettings,
     mockUsers, mockRoles, mockInvoices, mockAuditLog, mockCounties, mockArenas,
     mockSanctions, mockReferees, mockObservers, mockArticles, mockMediaImages,
-    mockGalleries, mockSponsors, mockTransfers, mockPlayerRegistrations, mockPortalConfig
+    mockGalleries, mockSponsors, mockTransfers, mockPlayerRegistrations, mockPortalConfig,
+    MOCK_NATIONAL_TEAM, MOCK_NATIONAL_SQUAD, MOCK_INTERNATIONAL_MATCHES
 } from './mock_data.ts';
 import { generateBergerTable } from '../utils/bergerTable.ts';
 
@@ -100,6 +100,14 @@ interface CompetitionContextType {
     addPlayerRegistration: (data: Omit<PlayerRegistration, 'id'>) => void;
     updatePlayerRegistration: (reg: PlayerRegistration) => void;
     deletePlayerRegistration: (id: string) => void;
+    // National Team
+    nationalTeam: NationalTeam;
+    nationalSquad: NationalSquadPlayer[];
+    addPlayerToSquad: (playerId: string) => void;
+    removePlayerFromSquad: (playerId: string) => void;
+    // Comments
+    comments: Comment[];
+    addComment: (data: { articleId: string, author: string, content: string }) => void;
 }
 
 const CompetitionContext = createContext<CompetitionContextType | undefined>(undefined);
@@ -108,7 +116,7 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     // All state managed here
     const [teams, setTeams] = useState<Team[]>(mockTeams);
     const [competitions, setCompetitions] = useState<Competition[]>(mockCompetitions);
-    const [matches, setMatches] = useState<Match[]>(mockMatches);
+    const [matches, setMatches] = useState<Match[]>([...mockMatches, ...MOCK_INTERNATIONAL_MATCHES]);
     const [players, setPlayers] = useState<Player[]>(mockPlayers);
     const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings>(mockOrganizationSettings);
     const [users, setUsers] = useState<User[]>(mockUsers);
@@ -128,6 +136,21 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     const [portalConfig, setPortalConfig] = useState<PortalConfig>(mockPortalConfig);
     const [transfers, setTransfers] = useState<Transfer[]>(mockTransfers);
     const [playerRegistrations, setPlayerRegistrations] = useState<PlayerRegistration[]>(mockPlayerRegistrations);
+    const [nationalTeam, setNationalTeam] = useState<NationalTeam>(MOCK_NATIONAL_TEAM);
+    const [nationalSquad, setNationalSquad] = useState<NationalSquadPlayer[]>(MOCK_NATIONAL_SQUAD);
+    const [comments, setComments] = useState<Comment[]>([]);
+
+    // Effect to load comments from localStorage on initial render
+    useEffect(() => {
+        try {
+            const storedComments = localStorage.getItem('futbalito_comments');
+            if (storedComments) {
+                setComments(JSON.parse(storedComments));
+            }
+        } catch (error) {
+            console.error("Failed to load comments from localStorage", error);
+        }
+    }, []);
 
     const logAction = (action: string, details: string) => {
         const newLog: AuditLog = {
@@ -503,6 +526,36 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     const deletePlayerRegistration = (id: string) => {
         setPlayerRegistrations(prev => prev.filter(r => r.id !== id));
     };
+    
+    // National Team Functions
+    const addPlayerToSquad = (playerId: string) => {
+        if (!nationalSquad.some(p => p.playerId === playerId)) {
+            const newSquadPlayer: NationalSquadPlayer = { playerId, caps: 0, goals: 0 };
+            setNationalSquad(prev => [...prev, newSquadPlayer]);
+            logAction('National Team', `Added player ${players.find(p=>p.id === playerId)?.name} to squad.`);
+        }
+    };
+    
+    const removePlayerFromSquad = (playerId: string) => {
+        setNationalSquad(prev => prev.filter(p => p.playerId !== playerId));
+        logAction('National Team', `Removed player ${players.find(p=>p.id === playerId)?.name} from squad.`);
+    };
+    
+    // Comments Functions
+    const addComment = (data: { articleId: string, author: string, content: string }) => {
+        const newComment: Comment = {
+            id: `comment-${Date.now()}`,
+            createdAt: new Date().toISOString(),
+            ...data
+        };
+        const updatedComments = [...comments, newComment];
+        setComments(updatedComments);
+        try {
+            localStorage.setItem('futbalito_comments', JSON.stringify(updatedComments));
+        } catch (error) {
+            console.error("Failed to save comments to localStorage", error);
+        }
+    };
 
     const value = {
         teams, addTeam, updateTeam, deleteTeam,
@@ -527,6 +580,8 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
         portalConfig, updatePortalConfig,
         transfers, addTransfer, updateTransfer, deleteTransfer,
         playerRegistrations, addPlayerRegistration, updatePlayerRegistration, deletePlayerRegistration,
+        nationalTeam, nationalSquad, addPlayerToSquad, removePlayerFromSquad,
+        comments, addComment,
     };
 
     return (

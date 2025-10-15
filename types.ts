@@ -69,8 +69,8 @@ export interface Match {
   events: MatchEvent[];
   stage?: string;
   liveStreamUrl?: string;
-  // FIX: Add isInternational flag for national team matches.
   isInternational?: boolean;
+  elapsedSeconds?: number;
 }
 
 export interface Sanction {
@@ -179,7 +179,6 @@ export interface Observer {
     name: string;
 }
 
-// FIX: Add NationalTeam and NationalSquadPlayer types for national team management.
 export interface NationalTeam {
     id: string;
     name: string;
@@ -202,6 +201,14 @@ export interface Article {
     author: string;
     createdAt: string; // ISO string
     status: 'draft' | 'published';
+}
+
+export interface Comment {
+  id: string;
+  articleId: string;
+  author: string;
+  content: string;
+  createdAt: string; // ISO string
 }
 
 export interface MediaImage {

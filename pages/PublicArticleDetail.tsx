@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import { ShieldCheckIcon, ChevronLeftIcon } from '../components/icons/Icons.tsx';
 import PublicHeader from '../components/public/PublicHeader.tsx';
+import CommentsSection from '../components/public/CommentsSection.tsx';
 
 interface PublicArticleDetailProps {
   competitionId: string;
@@ -44,11 +44,14 @@ const PublicArticleDetail: React.FC<PublicArticleDetailProps> = ({ competitionId
             <img src={article.featuredImageUrl} alt={article.title} className="w-full h-96 object-cover rounded-lg shadow-lg mb-8" />
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-4">{article.title}</h1>
             <p className="text-gray-500 mb-8">By {article.author} on {new Date(article.createdAt).toLocaleDateString()}</p>
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none mb-16">
                 {article.content.split('\n').map((paragraph, index) => (
                     <p key={index}>{paragraph}</p>
                 ))}
             </div>
+            
+            {/* --- Comments Section --- */}
+            <CommentsSection articleId={article.id} />
         </article>
       </main>
       <footer className="py-8 mt-12 border-t" style={{ borderColor: 'rgba(0,0,0,0.1)'}}>

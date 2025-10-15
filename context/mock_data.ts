@@ -50,16 +50,11 @@ export const mockCompetitions: Competition[] = [
 ];
 
 export const mockMatches: Match[] = [
-  // FIX: Removed `elapsedSeconds` property as it's not defined in the Match type.
-  { id: 'match-1', competitionId: 'comp-1', homeTeam: mockTeams[0], awayTeam: mockTeams[1], homeScore: 2, awayScore: 1, date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), status: 'Finished', events: [{id: 'evt-1', type: MatchEventType.GOAL, minute: 25, teamId: 'team-1', primaryPlayerId: 'player-1'}, {id: 'evt-2', type: MatchEventType.GOAL, minute: 60, teamId: 'team-2', primaryPlayerId: 'player-3'}, {id: 'evt-3', type: MatchEventType.GOAL, minute: 88, teamId: 'team-1', primaryPlayerId: 'player-2'}] },
-  // FIX: Removed `elapsedSeconds` property as it's not defined in the Match type.
-  { id: 'match-2', competitionId: 'comp-1', homeTeam: mockTeams[2], awayTeam: mockTeams[3], homeScore: 1, awayScore: 1, date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), status: 'Finished', events: [] },
-  // FIX: Removed `elapsedSeconds` property as it's not defined in the Match type.
-  { id: 'match-3', competitionId: 'comp-1', homeTeam: mockTeams[0], awayTeam: mockTeams[2], homeScore: 0, awayScore: 0, date: new Date().toISOString(), status: 'In Progress', liveStreamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', events: [] },
-  // FIX: Removed `elapsedSeconds` property as it's not defined in the Match type.
-  { id: 'match-4', competitionId: 'comp-1', homeTeam: mockTeams[1], awayTeam: mockTeams[3], homeScore: 0, awayScore: 0, date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), status: 'Not Started', events: [] },
-  // FIX: Removed `elapsedSeconds` property as it's not defined in the Match type.
-  { id: 'match-5', competitionId: 'comp-2', homeTeam: mockTeams[4], awayTeam: mockTeams[5], homeScore: 0, awayScore: 0, date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), status: 'Not Started', events: [] },
+  { id: 'match-1', competitionId: 'comp-1', homeTeam: mockTeams[0], awayTeam: mockTeams[1], homeScore: 2, awayScore: 1, date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), status: 'Finished', elapsedSeconds: 0, events: [{id: 'evt-1', type: MatchEventType.GOAL, minute: 25, teamId: 'team-1', primaryPlayerId: 'player-1'}, {id: 'evt-2', type: MatchEventType.GOAL, minute: 60, teamId: 'team-2', primaryPlayerId: 'player-3'}, {id: 'evt-3', type: MatchEventType.GOAL, minute: 88, teamId: 'team-1', primaryPlayerId: 'player-2'}] },
+  { id: 'match-2', competitionId: 'comp-1', homeTeam: mockTeams[2], awayTeam: mockTeams[3], homeScore: 1, awayScore: 1, date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), status: 'Finished', elapsedSeconds: 0, events: [] },
+  { id: 'match-3', competitionId: 'comp-1', homeTeam: mockTeams[0], awayTeam: mockTeams[2], homeScore: 0, awayScore: 0, date: new Date().toISOString(), status: 'In Progress', liveStreamUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', elapsedSeconds: 0, events: [] },
+  { id: 'match-4', competitionId: 'comp-1', homeTeam: mockTeams[1], awayTeam: mockTeams[3], homeScore: 0, awayScore: 0, date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), status: 'Not Started', elapsedSeconds: 0, events: [] },
+  { id: 'match-5', competitionId: 'comp-2', homeTeam: mockTeams[4], awayTeam: mockTeams[5], homeScore: 0, awayScore: 0, date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), status: 'Not Started', elapsedSeconds: 0, events: [] },
 ];
 
 export const mockOrganizationSettings: OrganizationSettings = { name: 'Futbalito', logoUrl: '/vite.svg', email: 'contact@futbalito.com', phone: '123-456-7890', address: '123 Futbalito St, City', defaultTimezone: 'Europe/Bucharest', defaultCompetitionFormat: 'league' };
@@ -129,7 +124,7 @@ export const MOCK_INTERNATIONAL_MATCHES: Match[] = [
         awayScore: 0,
         date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'Not Started',
-        // FIX: Removed `elapsedSeconds` property as it's not defined in the Match type.
+        elapsedSeconds: 0,
         events: []
     }
 ];

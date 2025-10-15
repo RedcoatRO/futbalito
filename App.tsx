@@ -1,5 +1,4 @@
-
-import React, 'react';
+import React from 'react';
 import Sidebar from './components/Sidebar.tsx';
 import Header from './components/Header.tsx';
 import Dashboard from './pages/Dashboard.tsx';
@@ -33,6 +32,15 @@ import PublicPortalSite from './pages/PublicPortalSite.tsx';
 import PublicArticleDetail from './pages/PublicArticleDetail.tsx';
 import PublicGalleryDetail from './pages/PublicGalleryDetail.tsx';
 import PublicAllLiveStreams from './pages/PublicAllLiveStreams.tsx';
+import PublicAllNews from './pages/PublicAllNews.tsx';
+import PublicAllMatches from './pages/PublicAllMatches.tsx';
+import PublicGlobalStats from './pages/PublicGlobalStats.tsx';
+import PublicAllGalleries from './pages/PublicAllGalleries.tsx';
+import PublicTeamDetail from './pages/PublicTeamDetail.tsx';
+import PublicPlayerDetail from './pages/PublicPlayerDetail.tsx';
+import PublicAllLive from './pages/PublicAllLive.tsx';
+import PublicLiveMatchDetail from './pages/PublicLiveMatchDetail.tsx';
+import PublicNationalTeam from './pages/PublicNationalTeam.tsx';
 
 
 import type { Page } from './types.ts';
@@ -61,10 +69,38 @@ const App: React.FC = () => {
     const articleId = queryParams.get('articleId');
     const galleryId = queryParams.get('galleryId');
     const isPortal = queryParams.get('portal');
+    const portalPage = queryParams.get('portal_page');
+    const teamId = queryParams.get('teamId');
+    const publicPlayerId = queryParams.get('playerId');
+    const publicLiveMatchId = queryParams.get('liveMatchId');
+    const isNationalTeam = queryParams.get('national_team');
     const view = queryParams.get('view');
 
-    if (isPortal === 'true') {
-        return <PublicPortalSite />;
+    if (isPortal === 'true' || portalPage) {
+        switch (portalPage) {
+            case 'news': return <PublicAllNews />;
+            case 'matches': return <PublicAllMatches />;
+            case 'stats': return <PublicGlobalStats />;
+            case 'galleries': return <PublicAllGalleries />;
+            case 'live': return <PublicAllLive />;
+            default: return <PublicPortalSite />;
+        }
+    }
+    
+    if (teamId) {
+        return <PublicTeamDetail teamId={teamId} />;
+    }
+
+    if (publicPlayerId) {
+        return <PublicPlayerDetail playerId={publicPlayerId} />;
+    }
+
+    if (publicLiveMatchId) {
+        return <PublicLiveMatchDetail matchId={publicLiveMatchId} />;
+    }
+    
+    if (isNationalTeam) {
+        return <PublicNationalTeam />;
     }
 
     if (publicCompetitionId) {

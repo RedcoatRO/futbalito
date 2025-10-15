@@ -1,5 +1,4 @@
-
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import useTimer from '../hooks/useTimer.ts';
 import type { Match, MatchEvent } from '../types.ts';
@@ -17,11 +16,29 @@ interface LiveMatchProps {
 const LiveMatch: React.FC<LiveMatchProps> = ({ matchId, onBack }) => {
     const { getMatchById, updateMatch, players } = useCompetitions();
     
+    // Local state for the match, initialized from context
     const [match, setMatch] = useState<Match | null>(() => getMatchById(matchId) || null);
-    const { time, isActive, isPaused, handleStart, handlePause, handleResume, handleReset } = useTimer(0);
+    
+    // Timer hook, initialized with the match's current elapsed time
+    const { time, isActive, isPaused, handleStart, handlePause, handleResume, handleReset } = useTimer(match?.elapsedSeconds || 0);
     
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [eventDefaults, setEventDefaults] = useState<{type: MatchEventType, teamId: string} | null>(null);
+
+    // Effect to synchronize the local timer back to the global context
+    useEffect(() => {
+        if (match) {
+            // This check prevents an infinite loop. Only update if the time has actually changed.
+            if (match.elapsedSeconds !== time) {
+                const updatedMatch = { ...match, elapsedSeconds: time };
+                // This updates the global state, making it available to the public page.
+                updateMatch(updatedMatch);
+                // Also update the local state to stay in sync.
+                setMatch(updatedMatch);
+            }
+        }
+    }, [time, match, updateMatch]);
+
 
     const matchEvents = useMemo(() => {
         return match ? [...match.events].sort((a, b) => b.minute - a.minute) : [];
