@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from 'react';
 import { useCompetitions } from '../../context/CompetitionContext.tsx';
 import type { Player } from '../../types.ts';
@@ -79,10 +78,10 @@ const PublicPlayerStats: React.FC<PublicPlayerStatsProps> = ({ competitionId }) 
                 return (
                   <tr key={player.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                     <td className="px-4 py-3 font-medium flex items-center text-gray-900">
-                      {team && <img src={team.logoUrl} className="h-8 w-8 rounded-full mr-3 object-cover" alt={team.name}/>}
+                      {team && <a href={`/?teamId=${team.id}`}><img src={team.logoUrl} className="h-8 w-8 rounded-full mr-3 object-cover" alt={team.name}/></a>}
                       <div>
-                        <p>{player.name}</p>
-                        <p className="text-xs text-gray-500">{team?.name}</p>
+                        <a href={`/?playerId=${player.id}`} className="hover:underline">{player.name}</a>
+                        {team && <a href={`/?teamId=${team.id}`} className="block text-xs text-gray-500 hover:underline">{team?.name}</a>}
                       </div>
                     </td>
                     <td className="px-3 py-3 text-center font-bold text-gray-800">{player.stats.goals}</td>

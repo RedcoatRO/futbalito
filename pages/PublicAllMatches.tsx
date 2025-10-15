@@ -6,16 +6,17 @@ import type { Match, Competition, Team } from '../types.ts';
 
 /**
  * A single match item component used to display match details consistently.
+ * Team names and logos are now links to their respective detail pages.
  */
 const MatchItem: React.FC<{ match: Match; competitions: Competition[] }> = ({ match, competitions }) => {
     const getCompetitionName = (id: string) => competitions.find(c => c.id === id)?.name || 'N/A';
     
     return (
       <li className="p-4 grid grid-cols-3 items-center gap-4">
-        <div className="flex items-center justify-end text-right">
-          <span className="font-semibold text-gray-800 hidden sm:inline">{match.homeTeam.name}</span>
+        <a href={`/?teamId=${match.homeTeam.id}`} className="flex items-center justify-end text-right group">
+          <span className="font-semibold text-gray-800 hidden sm:inline group-hover:underline">{match.homeTeam.name}</span>
           <img src={match.homeTeam.logoUrl} alt={match.homeTeam.name} className="h-10 w-10 rounded-full ml-3 object-cover"/>
-        </div>
+        </a>
         <div className="text-center">
           {match.status === 'Finished' ? (
              <div className="text-2xl font-bold text-gray-900">{match.homeScore} - {match.awayScore}</div>
@@ -24,10 +25,10 @@ const MatchItem: React.FC<{ match: Match; competitions: Competition[] }> = ({ ma
           )}
           <p className="text-xs text-gray-400 truncate mt-1">{getCompetitionName(match.competitionId)}</p>
         </div>
-        <div className="flex items-center justify-start">
+        <a href={`/?teamId=${match.awayTeam.id}`} className="flex items-center justify-start group">
           <img src={match.awayTeam.logoUrl} alt={match.awayTeam.name} className="h-10 w-10 rounded-full mr-3 object-cover"/>
-           <span className="font-semibold text-gray-800 hidden sm:inline">{match.awayTeam.name}</span>
-        </div>
+           <span className="font-semibold text-gray-800 hidden sm:inline group-hover:underline">{match.awayTeam.name}</span>
+        </a>
       </li>
     );
 };

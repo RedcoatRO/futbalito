@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../../context/CompetitionContext.tsx';
@@ -40,7 +39,7 @@ const PublicRankings: React.FC<PublicRankingsProps> = ({ competitionId }) => {
                   <td className="px-4 py-3 font-medium flex items-center text-gray-900">
                     <span className="w-6 text-center mr-2 text-gray-500">{index + 1}</span>
                     <img src={s.logoUrl} className="h-8 w-8 rounded-full mr-3 object-cover" alt={s.teamName}/>
-                    <span className="truncate">{s.teamName}</span>
+                    <a href={`/?teamId=${s.teamId}`} className="truncate hover:underline">{s.teamName}</a>
                   </td>
                   <td className="px-3 py-3 text-center text-gray-700">{s.played}</td>
                   <td className="px-3 py-3 text-center text-gray-700">{s.wins}</td>

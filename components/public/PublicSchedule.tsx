@@ -52,10 +52,10 @@ const PublicSchedule: React.FC<PublicScheduleProps> = ({ competitionId }) => {
             <ul className="divide-y divide-gray-200">
               {matchesInStage.map(match => (
                 <li key={match.id} className="p-4 grid grid-cols-3 items-center gap-4">
-                  <div className="flex items-center justify-end text-right">
-                    <span className="font-semibold text-gray-800 hidden sm:inline">{match.homeTeam.name}</span>
+                  <a href={`/?teamId=${match.homeTeam.id}`} className="flex items-center justify-end text-right group">
+                    <span className="font-semibold text-gray-800 hidden sm:inline group-hover:underline">{match.homeTeam.name}</span>
                     <img src={match.homeTeam.logoUrl} alt={match.homeTeam.name} className="h-10 w-10 rounded-full ml-3 object-cover"/>
-                  </div>
+                  </a>
                   
                   <div className="text-center">
                     {match.status === 'Finished' ? (
@@ -72,10 +72,10 @@ const PublicSchedule: React.FC<PublicScheduleProps> = ({ competitionId }) => {
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-start">
+                  <a href={`/?teamId=${match.awayTeam.id}`} className="flex items-center justify-start group">
                     <img src={match.awayTeam.logoUrl} alt={match.awayTeam.name} className="h-10 w-10 rounded-full mr-3 object-cover"/>
-                     <span className="font-semibold text-gray-800 hidden sm:inline">{match.awayTeam.name}</span>
-                  </div>
+                     <span className="font-semibold text-gray-800 hidden sm:inline group-hover:underline">{match.awayTeam.name}</span>
+                  </a>
                 </li>
               ))}
             </ul>

@@ -39,22 +39,33 @@ import PublicAllNews from './pages/PublicAllNews.tsx';
 import PublicAllMatches from './pages/PublicAllMatches.tsx';
 import PublicGlobalStats from './pages/PublicGlobalStats.tsx';
 import PublicAllGalleries from './pages/PublicAllGalleries.tsx';
+// Import new detailed profile pages
+import PublicPlayerDetail from './pages/PublicPlayerDetail.tsx';
+
 
 import type { Page } from './types.ts';
 
 const App: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
+    // --- Start of Routing Logic ---
+    // This section parses URL query parameters to determine which public page to render.
+    // This avoids the need for a complex routing library and works well for this application's structure.
     const queryParams = new URLSearchParams(window.location.search);
     const publicCompetitionId = queryParams.get('publicCompetitionId');
     const articleId = queryParams.get('articleId');
     const galleryId = queryParams.get('galleryId');
     const liveView = queryParams.get('view') === 'live';
     const isPortal = queryParams.get('portal') === 'true';
-    const portalPage = queryParams.get('portal_page'); // New parameter for portal sub-pages
-    const isPublicTeam = queryParams.get('teamId');
+    const portalPage = queryParams.get('portal_page');
+    const teamId = queryParams.get('teamId');
+    const playerId = queryParams.get('playerId'); // New parameter for player profiles
     const isPublicNational = queryParams.get('nationalTeam');
+    // --- End of Routing Logic ---
 
+
+    // --- Start of State Management for Admin Panel ---
+    // These states control the navigation and active context within the admin dashboard.
     const [page, setPage] = useState<Page>('DASHBOARD');
     const [activeCompetitionId, setActiveCompetitionId] = useState<string | null>(null);
     const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
@@ -63,16 +74,24 @@ const App: React.FC = () => {
     const [activeGalleryId, setActiveGalleryId] = useState<string | null>(null);
     const [manageSponsorsCompetitionId, setManageSponsorsCompetitionId] = useState<string | null>(null);
     const [manageRegulationsCompetitionId, setManageRegulationsCompetitionId] = useState<string | null>(null);
+    // --- End of State Management for Admin Panel ---
 
 
-    // Public Site Routing
+    // --- Start of Public Site Routing ---
+    // This block of `if` statements checks the URL parameters and renders the appropriate
+    // public-facing page component. This acts as the primary router for the non-admin part of the site.
     if (isPublicNational) {
         return <PublicNationalTeam />;
     }
-    if (isPublicTeam) {
-        return <PublicTeamDetail />;
+    // Render the detailed team profile page if a `teamId` is present
+    if (teamId) {
+        return <PublicTeamDetail teamId={teamId} />;
     }
-    // New routing for aggregated portal pages
+    // Render the detailed player profile page if a `playerId` is present
+    if (playerId) {
+        return <PublicPlayerDetail playerId={playerId} />;
+    }
+    // Handle routing for the main portal and its aggregated sub-pages (News, Matches, etc.)
     if (isPortal) {
         switch (portalPage) {
             case 'news': return <PublicAllNews />;
@@ -82,6 +101,7 @@ const App: React.FC = () => {
             default: return <PublicPortalSite />;
         }
     }
+    // Handle routing for single-competition sites and their specific content pages (articles, galleries).
     if (publicCompetitionId) {
         if (articleId) {
             return <PublicArticleDetail competitionId={publicCompetitionId} articleId={articleId} />;
@@ -94,8 +114,11 @@ const App: React.FC = () => {
         }
         return <PublicSite competitionId={publicCompetitionId} />;
     }
+    // --- End of Public Site Routing ---
 
-    // Handlers to switch between pages/views
+    // --- Start of Admin Panel Navigation Handlers ---
+    // These functions are passed down to child components to allow them to change
+    // the current view in the admin panel.
     const handleViewCompetition = (id: string) => {
         setActiveCompetitionId(id);
         setPage('VIEW_COMPETITION');
@@ -185,7 +208,10 @@ const App: React.FC = () => {
     const handleCustomizePortal = () => {
         setPage('PORTAL_BUILDER');
     }
+    // --- End of Admin Panel Navigation Handlers ---
 
+    // --- Admin Panel Page Renderer ---
+    // Renders the main content of the admin panel based on the `page` state.
     const renderPage = () => {
         switch (page) {
             case 'DASHBOARD': return <Dashboard setPage={setPage} />;
@@ -217,6 +243,7 @@ const App: React.FC = () => {
         }
     };
 
+    // Main layout for the Admin Panel
     return (
         <div className="flex h-screen bg-gray-100">
             <Sidebar page={page} setPage={setPage} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />

@@ -7,16 +7,27 @@ interface MatchTickerProps {
   competitions: Competition[];
 }
 
-// FIX: Moved MatchItem component outside of MatchTicker to prevent re-renders and fix type errors with the 'key' prop.
-const MatchItem = ({ match, competitions }: { match: Match; competitions: Competition[] }) => {
+// FIX: Defined a props interface and used React.FC to correctly handle props, including the special 'key' prop.
+interface MatchItemProps {
+  match: Match;
+  competitions: Competition[];
+}
+
+/**
+ * A single match item component for the ticker.
+ * Team names and logos are now links to their respective detail pages.
+ * @param {object} props The component props.
+ * @returns {JSX.Element} A single row in the match ticker.
+ */
+const MatchItem: React.FC<MatchItemProps> = ({ match, competitions }) => {
   const getCompetitionName = (id: string) => competitions.find(c => c.id === id)?.name || 'N/A';
   
   return (
     <div className="p-4 grid grid-cols-3 items-center gap-2">
-        <div className="flex items-center justify-end text-right">
-          <span className="font-semibold text-gray-800 text-sm md:text-base hidden sm:inline">{match.homeTeam.name}</span>
+        <a href={`/?teamId=${match.homeTeam.id}`} className="flex items-center justify-end text-right group">
+          <span className="font-semibold text-gray-800 text-sm md:text-base hidden sm:inline group-hover:underline">{match.homeTeam.name}</span>
           <img src={match.homeTeam.logoUrl} alt={match.homeTeam.name} className="h-8 w-8 rounded-full ml-3 object-cover" />
-        </div>
+        </a>
         <div className="text-center">
           {match.status === 'Finished' ? (
             <div className="text-xl font-bold text-gray-900">{match.homeScore} - {match.awayScore}</div>
@@ -25,10 +36,10 @@ const MatchItem = ({ match, competitions }: { match: Match; competitions: Compet
           )}
           <p className="text-xs text-gray-400 truncate mt-1">{getCompetitionName(match.competitionId)}</p>
         </div>
-        <div className="flex items-center justify-start">
+        <a href={`/?teamId=${match.awayTeam.id}`} className="flex items-center justify-start group">
           <img src={match.awayTeam.logoUrl} alt={match.awayTeam.name} className="h-8 w-8 rounded-full mr-3 object-cover" />
-          <span className="font-semibold text-gray-800 text-sm md:text-base hidden sm:inline">{match.awayTeam.name}</span>
-        </div>
+          <span className="font-semibold text-gray-800 text-sm md:text-base hidden sm:inline group-hover:underline">{match.awayTeam.name}</span>
+        </a>
     </div>
   );
 };
@@ -40,6 +51,10 @@ const MatchItem = ({ match, competitions }: { match: Match; competitions: Compet
  */
 const MatchTicker: React.FC<MatchTickerProps> = ({ recentMatches, upcomingMatches, competitions }) => {
   const [activeTab, setActiveTab] = useState<'recent' | 'upcoming'>('recent');
+
+  if (recentMatches.length === 0 && upcomingMatches.length === 0) {
+    return null;
+  }
 
   return (
     <section className="mt-16">

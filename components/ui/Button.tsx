@@ -15,14 +15,16 @@ type ButtonProps<E extends React.ElementType> = ButtonOwnProps<E> &
 
 const defaultElement = 'button';
 
-// FIX: Changed to a function declaration to resolve issues with generic components in TSX.
-function Button<E extends React.ElementType = typeof defaultElement>({
+// FIX: Switched from a function declaration to a generic arrow function component.
+// This resolves a TSX parsing issue with generic components that was causing a "does not have any construct or call signatures" error,
+// which in turn fixes all the downstream "Property 'children' is missing" errors across the application.
+const Button = <E extends React.ElementType = typeof defaultElement>({
   children,
   className = '',
   variant = 'primary',
   as,
   ...props
-}: ButtonProps<E>) {
+}: ButtonProps<E>) => {
   const Component = as || defaultElement;
 
   const baseStyles = 'inline-flex items-center justify-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150';
@@ -42,6 +44,6 @@ function Button<E extends React.ElementType = typeof defaultElement>({
       {children}
     </Component>
   );
-}
+};
 
 export default Button;
