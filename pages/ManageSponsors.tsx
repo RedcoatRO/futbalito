@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 // FIX: Added .ts extension to module import.
 import type { Sponsor } from '../types.ts';
@@ -8,7 +6,7 @@ import Button from '../components/ui/Button.tsx';
 import Modal from '../components/ui/Modal.tsx';
 import SponsorForm from '../components/SponsorForm.tsx';
 import { ChevronLeftIcon, PlusIcon } from '../components/icons/Icons.tsx';
-// FIX: Added .ts extension to module import.
+// FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import usePermissions from '../hooks/usePermissions.ts';
 
@@ -84,12 +82,14 @@ const ManageSponsors: React.FC<ManageSponsorsProps> = ({ competitionId, onBack }
                 <tr key={sponsor.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <img src={sponsor.logoUrl} alt={sponsor.name} className="h-10 w-24 object-contain mr-4" />
-                      <span className="font-medium text-gray-900">{sponsor.name}</span>
+                      <img className="h-10 object-contain mr-4 bg-gray-100 p-1 rounded" src={sponsor.logoUrl} alt={sponsor.name} />
+                      <span className="font-medium">{sponsor.name}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <a href={sponsor.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{sponsor.websiteUrl}</a>
+                    <a href={sponsor.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      {sponsor.websiteUrl}
+                    </a>
                   </td>
                   {canManageSponsors && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
@@ -104,7 +104,7 @@ const ManageSponsors: React.FC<ManageSponsorsProps> = ({ competitionId, onBack }
         </div>
       </div>
 
-       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingSponsor ? 'Edit Sponsor' : 'Add New Sponsor'}>
+      <Modal isOpen={isModalOpen} onClose={closeModal} title={editingSponsor ? 'Edit Sponsor' : 'Add New Sponsor'}>
         <SponsorForm 
           sponsor={editingSponsor}
           onSave={handleSave}

@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../../context/CompetitionContext.tsx';
@@ -26,6 +27,7 @@ const PublicRankings: React.FC<PublicRankingsProps> = ({ competitionId }) => {
                 <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Team</th>
                 <th className="px-3 py-3 text-center text-sm font-semibold text-gray-600 uppercase">P</th>
                 <th className="px-3 py-3 text-center text-sm font-semibold text-gray-600 uppercase">W</th>
+                <th className="px-3 py-3 text-center text-sm font-semibold text-gray-600 uppercase">D</th>
                 <th className="px-3 py-3 text-center text-sm font-semibold text-gray-600 uppercase">L</th>
                 <th className="px-3 py-3 text-center text-sm font-semibold text-gray-600 uppercase hidden sm:table-cell">GF</th>
                 <th className="px-3 py-3 text-center text-sm font-semibold text-gray-600 uppercase hidden sm:table-cell">GA</th>
@@ -43,6 +45,7 @@ const PublicRankings: React.FC<PublicRankingsProps> = ({ competitionId }) => {
                   </td>
                   <td className="px-3 py-3 text-center text-gray-700">{s.played}</td>
                   <td className="px-3 py-3 text-center text-gray-700">{s.wins}</td>
+                  <td className="px-3 py-3 text-center text-gray-700">{s.draws}</td>
                   <td className="px-3 py-3 text-center text-gray-700">{s.losses}</td>
                   <td className="px-3 py-3 text-center text-gray-700 hidden sm:table-cell">{s.goalsFor}</td>
                   <td className="px-3 py-3 text-center text-gray-700 hidden sm:table-cell">{s.goalsAgainst}</td>

@@ -1,32 +1,27 @@
-// The main pages of the application
-export type Page =
-  | 'DASHBOARD'
-  | 'BROWSE'
-  | 'MANAGE_COMPETITIONS'
-  | 'COMPETITION_DETAIL'
-  | 'LIVE_MATCH'
-  | 'MANAGE_TEAMS'
-  | 'MANAGE_PLAYERS'
-  | 'PLAYER_DETAIL'
-  | 'MANAGE_ARENAS'
-  | 'MANAGE_REFEREES'
-  | 'MANAGE_OBSERVERS'
-  | 'MANAGE_ORGANIZERS'
-  | 'MANAGE_NATIONAL_TEAM'
-  | 'PUBLISH'
-  | 'WEB_BUILDER'
-  | 'MANAGE_ARTICLES'
-  | 'EDIT_ARTICLE'
-  | 'MANAGE_MEDIA'
-  | 'EDIT_GALLERY'
-  | 'MANAGE_SPONSORS'
-  | 'MANAGE_REGULATIONS'
-  | 'REPORTS'
-  | 'MARKETPLACE'
-  | 'SETTINGS'
-  | 'PORTAL_BUILDER';
+// types.ts
 
-// Represents a single team
+// Basic types
+export type Page = 
+  | 'DASHBOARD' | 'BROWSE' | 'MANAGE_COMPETITIONS' | 'MANAGE_TEAMS' | 'MANAGE_PLAYERS'
+  | 'MANAGE_ARENAS' | 'MANAGE_REFEREES' | 'MANAGE_OBSERVERS' | 'MANAGE_ORGANIZERS'
+  | 'MANAGE_NATIONAL_TEAM' | 'PUBLISH' | 'REPORTS' | 'MARKETPLACE' | 'SETTINGS';
+
+export type Permission =
+  | 'competitions:create' | 'competitions:edit' | 'competitions:delete'
+  | 'teams:create' | 'teams:edit' | 'teams:delete'
+  | 'players:manage'
+  | 'arenas:manage'
+  | 'referees:manage'
+  | 'observers:manage'
+  | 'organizers:manage'
+  | 'matches:manage_live'
+  | 'publish:manage_articles' | 'publish:manage_media' | 'publish:manage_sponsors'
+  | 'publish:manage_regulations' | 'publish:customize_sites'
+  | 'settings:manage_organization' | 'settings:manage_counties'
+  | 'users:invite' | 'users:manage_roles'
+  | 'transfers:manage';
+
+// Core data models
 export interface Team {
   id: string;
   name: string;
@@ -34,7 +29,6 @@ export interface Team {
   logoUrl: string;
 }
 
-// Represents a player
 export interface Player {
   id: string;
   name: string;
@@ -47,67 +41,91 @@ export interface Player {
   };
 }
 
-// Represents a single match event (goal, card, substitution)
 export enum MatchEventType {
   GOAL = 'GOAL',
   YELLOW_CARD = 'YELLOW_CARD',
   RED_CARD = 'RED_CARD',
   SUBSTITUTION = 'SUBSTITUTION',
-  COMMENTARY = 'COMMENTARY',
 }
 
 export interface MatchEvent {
   id: string;
-  minute: number;
   type: MatchEventType;
+  minute: number;
   teamId: string;
   primaryPlayerId: string;
-  secondaryPlayerId?: string; // For substitutions (player in)
-  commentary?: string; // For commentary events
+  secondaryPlayerId?: string; // For substitutions
 }
 
-// Represents a match between two teams
 export interface Match {
   id: string;
   competitionId: string;
   homeTeam: Team;
   awayTeam: Team;
-  date: string;
-  status: 'Not Started' | 'In Progress' | 'Finished' | 'Postponed';
   homeScore: number;
   awayScore: number;
+  date: string; // ISO string
+  status: 'Not Started' | 'In Progress' | 'Finished';
   events: MatchEvent[];
   stage?: string;
-  arenaId?: string;
-  refereeId?: string;
-  observerId?: string;
   liveStreamUrl?: string;
+  // FIX: Add isInternational flag for national team matches.
+  isInternational?: boolean;
 }
 
-// Represents standings for a team in a league
-export interface Standing {
-  teamId: string;
-  teamName: string;
-  logoUrl: string;
-  played: number;
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  goalDifference: number;
-  points: number;
-}
-
-// Represents an arena/stadium
-export interface Arena {
+export interface Sanction {
     id: string;
-    name: string;
-    location: string;
-    fields: string[];
+    competitionId: string;
+    teamId?: string;
+    playerId?: string;
+    reason: string;
+    details: string; // e.g., "2 match suspension"
+    date: string; // ISO string
 }
 
-// Represents a user of the admin system
+export interface Competition {
+  id: string;
+  name: string;
+  season: string;
+  logoUrl: string;
+  status: 'Upcoming' | 'Ongoing' | 'Completed';
+  teamIds: string[];
+  format: 'league' | 'cup' | 'mixed';
+  twoLegged?: boolean;
+  teamsPerGroup?: number;
+  defaultArenaId?: string;
+  isPublic?: boolean;
+  county?: string;
+  organizerId?: string;
+  publicConfig?: PublicConfig;
+}
+
+export interface Standing {
+    teamId: string;
+    teamName: string;
+    logoUrl: string;
+    played: number;
+    wins: number;
+    losses: number;
+    draws: number;
+    goalsFor: number;
+    goalsAgainst: number;
+    goalDifference: number;
+    points: number;
+}
+
+
+// Settings & Admin
+export interface OrganizationSettings {
+  name: string;
+  logoUrl: string;
+  email: string;
+  phone: string;
+  address: string;
+  defaultTimezone: string;
+  defaultCompetitionFormat: 'league' | 'cup' | 'mixed';
+}
+
 export interface User {
   id: string;
   name: string;
@@ -116,32 +134,6 @@ export interface User {
   status: 'ACTIVE' | 'PENDING';
 }
 
-// Defines a permission string
-export type Permission =
-  | 'competitions:create'
-  | 'competitions:edit'
-  | 'competitions:delete'
-  | 'teams:create'
-  | 'teams:edit'
-  | 'teams:delete'
-  | 'players:manage'
-  | 'arenas:manage'
-  | 'referees:manage'
-  | 'observers:manage'
-  | 'matches:manage_live'
-  | 'publish:manage_articles'
-  | 'publish:manage_media'
-  | 'publish:manage_sponsors'
-  | 'publish:manage_regulations'
-  | 'publish:customize_sites'
-  | 'settings:manage_organization'
-  | 'settings:manage_counties'
-  | 'users:invite'
-  | 'users:manage_roles'
-  | 'organizers:manage'
-  | 'transfers:manage';
-
-// Represents a user role with a set of permissions
 export interface Role {
   id: string;
   name: string;
@@ -149,59 +141,58 @@ export interface Role {
   permissions: Permission[];
 }
 
-// Represents organization-wide settings
-export interface OrganizationSettings {
-    name: string;
-    logoUrl: string;
-    email: string;
-    phone: string;
-    address: string;
-    defaultTimezone: string;
-    defaultCompetitionFormat: 'league' | 'cup' | 'mixed';
-}
-
-// Represents a financial invoice
 export interface Invoice {
     id: string;
     date: string;
     amount: string;
-    status: 'Paid' | 'Pending';
+    status: 'Paid';
 }
 
-// Represents an entry in the audit log
 export interface AuditLog {
     id: string;
     userId: string;
     userName: string;
     action: string;
     details: string;
-    timestamp: string;
+    timestamp: string; // ISO string
 }
 
-// Represents a disciplinary sanction
-export interface Sanction {
+export interface County {
     id: string;
-    competitionId: string;
-    teamId?: string;
-    playerId?: string;
-    reason: string;
-    details: string; // e.g., "2 match suspension"
-    date: string;
+    name: string;
 }
 
-// Represents a referee
+export interface Arena {
+    id: string;
+    name: string;
+    location: string;
+    fields: string[];
+}
+
 export interface Referee {
     id: string;
     name: string;
 }
 
-// Represents a match observer
 export interface Observer {
     id: string;
     name: string;
 }
 
-// Represents a news article
+// FIX: Add NationalTeam and NationalSquadPlayer types for national team management.
+export interface NationalTeam {
+    id: string;
+    name: string;
+    logoUrl: string;
+}
+
+export interface NationalSquadPlayer {
+    playerId: string;
+    caps: number;
+    goals: number;
+}
+
+// Publishing models
 export interface Article {
     id: string;
     competitionId: string;
@@ -209,19 +200,16 @@ export interface Article {
     content: string;
     featuredImageUrl: string;
     author: string;
-    createdAt: string;
+    createdAt: string; // ISO string
     status: 'draft' | 'published';
 }
 
-// Represents an image in the media library
 export interface MediaImage {
     id: string;
     competitionId: string;
     url: string;
-    uploadedAt: string;
 }
 
-// Represents a photo gallery
 export interface Gallery {
     id: string;
     competitionId: string;
@@ -229,68 +217,34 @@ export interface Gallery {
     imageIds: string[];
 }
 
-// Represents a sponsor
 export interface Sponsor {
     id: string;
     competitionId: string;
     name: string;
-    logoUrl: string;
     websiteUrl: string;
+    logoUrl: string;
 }
 
-// Represents an official regulation document
-export interface Regulation {
+export interface Announcement {
     id: string;
     title: string;
     content: string;
-    lastUpdatedAt: string;
+    date: string; // ISO string
 }
 
-// Represents a player transfer between teams
-export interface Transfer {
-    id: string;
-    playerId: string;
-    fromTeamId: string;
-    toTeamId: string;
-    date: string;
-    fee: number;
-}
-
-export type PlayerRegistrationStatus = 'ACTIVE' | 'EXPIRED';
-
-// Represents a player's official registration
-export interface PlayerRegistration {
-    id: string;
-    playerId: string;
-    registrationNumber: string;
-    validFrom: string;
-    validUntil: string;
-    status: PlayerRegistrationStatus;
-}
-
-// Represents a county or region
-export interface County {
-    id: string;
-    name: string;
-}
-
-// Represents a member of an organizing committee
 export interface CommitteeMember {
     id: string;
     name: string;
     role: string;
 }
 
-// Represents a public announcement
-export interface Announcement {
+export interface Regulation {
     id: string;
     title: string;
     content: string;
-    date: string;
+    lastUpdatedAt: string; // ISO string
 }
 
-
-// Configuration for a public-facing competition website
 export interface PublicConfig {
     title: string;
     logoUrl: string;
@@ -310,28 +264,30 @@ export interface PublicConfig {
     regulations: Regulation[];
 }
 
-// Represents a competition
-export interface Competition {
-  id: string;
-  name: string;
-  season: string;
-  logoUrl: string;
-  status: 'Upcoming' | 'Ongoing' | 'Completed';
-  teamIds: string[];
-  format: 'league' | 'cup' | 'mixed';
-  twoLegged?: boolean;
-  teamsPerGroup?: number;
-  defaultArenaId?: string;
-  isPublic?: boolean;
-  county?: string;
-  organizerId?: string;
-  publicConfig?: PublicConfig;
-}
-
-// Configuration for the main public portal
 export interface PortalConfig {
     title: string;
     logoUrl: string;
     primaryColor: string;
     backgroundColor: string;
+}
+
+// Reports
+export interface Transfer {
+    id: string;
+    playerId: string;
+    fromTeamId: string;
+    toTeamId: string;
+    date: string; // ISO string
+    fee: number;
+}
+
+export type PlayerRegistrationStatus = 'ACTIVE' | 'EXPIRED';
+
+export interface PlayerRegistration {
+    id: string;
+    playerId: string;
+    registrationNumber: string;
+    validFrom: string; // ISO string
+    validUntil: string; // ISO string
+    status: PlayerRegistrationStatus;
 }

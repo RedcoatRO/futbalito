@@ -1,288 +1,349 @@
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-// FIX: Added .ts extension to module import to resolve module resolution error.
-import type { Competition, Team, Match, Standing, Player, Arena, User, Role, OrganizationSettings, Invoice, AuditLog, Sanction, Referee, Observer, Article, MediaImage, Gallery, Sponsor, PublicConfig, Regulation, Transfer, PlayerRegistration, County, CommitteeMember, Announcement, PortalConfig } from '../types.ts';
-// FIX: Added .ts extension to module import to resolve module resolution error.
-import { MOCK_COMPETITIONS, MOCK_TEAMS, MOCK_MATCHES, MOCK_PLAYERS, MOCK_ARENAS, MOCK_USERS, MOCK_ROLES, MOCK_ORGANIZATION_SETTINGS, MOCK_INVOICES, MOCK_AUDIT_LOG, MOCK_SANCTIONS, MOCK_REFEREES, MOCK_OBSERVERS, MOCK_ARTICLES, MOCK_MEDIA_IMAGES, MOCK_GALLERIES, MOCK_SPONSORS, MOCK_TRANSFERS, MOCK_PLAYER_REGISTRATIONS, MOCK_COUNTIES, MOCK_PORTAL_CONFIG } from './mock_data.ts';
+import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
+import { 
+    Team, Competition, Match, Player, OrganizationSettings, User, Role,
+    Invoice, AuditLog, County, Arena, Sanction, Referee, Observer,
+    Article, MediaImage, Gallery, Sponsor, Transfer, PlayerRegistration,
+    Standing, MatchEventType, PortalConfig, PublicConfig
+} from '../types.ts';
+import { 
+    mockTeams, mockCompetitions, mockMatches, mockPlayers, mockOrganizationSettings,
+    mockUsers, mockRoles, mockInvoices, mockAuditLog, mockCounties, mockArenas,
+    mockSanctions, mockReferees, mockObservers, mockArticles, mockMediaImages,
+    mockGalleries, mockSponsors, mockTransfers, mockPlayerRegistrations, mockPortalConfig
+} from './mock_data.ts';
 import { generateBergerTable } from '../utils/bergerTable.ts';
 
+// Define the shape of the context value
 interface CompetitionContextType {
-  competitions: Competition[];
-  teams: Team[];
-  matches: Match[];
-  players: Player[];
-  arenas: Arena[];
-  users: User[];
-  currentUser: User | null;
-  roles: Role[];
-  organizationSettings: OrganizationSettings;
-  invoices: Invoice[];
-  auditLog: AuditLog[];
-  sanctions: Sanction[];
-  referees: Referee[];
-  observers: Observer[];
-  articles: Article[];
-  mediaImages: MediaImage[];
-  galleries: Gallery[];
-  sponsors: Sponsor[];
-  transfers: Transfer[];
-  playerRegistrations: PlayerRegistration[];
-  counties: County[];
-  portalConfig: PortalConfig;
-  getCompetitionById: (id: string) => Competition | undefined;
-  getMatchById: (id: string) => Match | undefined;
-  getArticleById: (id: string) => Article | undefined;
-  getGalleryById: (id: string) => Gallery | undefined;
-  getTransfersByPlayerId: (playerId: string) => Transfer[];
-  getPlayerRegistrationsByPlayerId: (playerId: string) => PlayerRegistration[];
-  addCompetition: (data: any) => void;
-  // FIX: Update function signature to allow for an optional logoFile property.
-  updateCompetition: (data: Competition & { logoFile?: File | null }) => void;
-  deleteCompetition: (id: string) => void;
-  addTeam: (data: any) => void;
-  updateTeam: (data: Team & { logoFile?: File | null }) => void;
-  deleteTeam: (id: string) => void;
-  addPlayer: (data: any) => void;
-  updatePlayer: (data: Player) => void;
-  deletePlayer: (id: string) => void;
-  addArena: (data: any) => void;
-  updateArena: (data: Arena) => void;
-  deleteArena: (id: string) => void;
-  addReferee: (data: any) => void;
-  updateReferee: (data: Referee) => void;
-  deleteReferee: (id: string) => void;
-  addObserver: (data: any) => void;
-  updateObserver: (data: Observer) => void;
-  deleteObserver: (id: string) => void;
-  addSanction: (data: Omit<Sanction, 'id'>) => void;
-  updateSanction: (data: Sanction) => void;
-  deleteSanction: (id: string) => void;
-  updateMatch: (data: Match) => void;
-  addTeamToCompetition: (competitionId: string, teamId: string) => void;
-  generateBergerSchedule: (competitionId: string) => void;
-  calculateStandings: (competitionId: string, stage: string) => Standing[];
-  setCurrentUser: (userId: string) => void;
-  inviteUser: (email: string, roleId: string) => void;
-  updateUser: (user: User) => void;
-  deleteUser: (userId: string) => void;
-  addRole: (role: Omit<Role, 'id'>) => void;
-  updateRole: (role: Role) => void;
-  deleteRole: (roleId: string) => void;
-  addCounty: (county: Omit<County, 'id'>) => void;
-  updateCounty: (county: County) => void;
-  deleteCounty: (countyId: string) => void;
-  updateOrganizationSettings: (settings: OrganizationSettings, logoFile: File | null) => void;
-  updateCompetitionPublicConfig: (competitionId: string, config: PublicConfig, logoFile: File | null) => void;
-  addArticle: (data: Omit<Article, 'id' | 'featuredImageUrl' | 'author' | 'createdAt'>, imageFile: File | null) => void;
-  updateArticle: (data: Article, imageFile: File | null) => void;
-  deleteArticle: (articleId: string) => void;
-  uploadImage: (competitionId: string, imageFile: File) => void;
-  deleteImage: (imageId: string) => void;
-  addGallery: (data: Omit<Gallery, 'id'>) => void;
-  updateGallery: (data: Gallery) => void;
-  deleteGallery: (galleryId: string) => void;
-  addSponsor: (data: Omit<Sponsor, 'id' | 'logoUrl'>, logoFile: File | null) => void;
-  updateSponsor: (data: Sponsor, logoFile: File | null) => void;
-  deleteSponsor: (sponsorId: string) => void;
-  updateCompetitionRegulation: (competitionId: string, regulation: Regulation) => void;
-  addTransfer: (data: Omit<Transfer, 'id'>) => void;
-  updateTransfer: (data: Transfer) => void;
-  deleteTransfer: (id: string) => void;
-  addPlayerRegistration: (data: Omit<PlayerRegistration, 'id'>) => void;
-  updatePlayerRegistration: (data: PlayerRegistration) => void;
-  deletePlayerRegistration: (id: string) => void;
-  updatePortalConfig: (config: PortalConfig, logoFile: File | null) => void;
+    teams: Team[];
+    addTeam: (data: { name: string; country: string; logoFile?: File | null }) => void;
+    updateTeam: (team: Team) => void;
+    deleteTeam: (id: string) => void;
+    competitions: Competition[];
+    getCompetitionById: (id: string) => Competition | undefined;
+    addCompetition: (data: any) => void;
+    updateCompetition: (competition: Competition) => void;
+    deleteCompetition: (id: string) => void;
+    addTeamToCompetition: (competitionId: string, teamId: string) => void;
+    matches: Match[];
+    getMatchById: (id: string) => Match | undefined;
+    updateMatch: (match: Match) => void;
+    generateBergerSchedule: (competitionId: string) => void;
+    players: Player[];
+    addPlayer: (data: { name: string; teamId: string }) => void;
+    updatePlayer: (player: Player) => void;
+    deletePlayer: (id: string) => void;
+    getTransfersByPlayerId: (playerId: string) => Transfer[];
+    getPlayerRegistrationsByPlayerId: (playerId: string) => PlayerRegistration[];
+    organizationSettings: OrganizationSettings;
+    updateOrganizationSettings: (settings: OrganizationSettings, logoFile?: File | null) => void;
+    currentUser: User | null;
+    users: User[];
+    setCurrentUser: (id: string) => void;
+    inviteUser: (email: string, roleId: string) => void;
+    updateUser: (user: User) => void;
+    deleteUser: (id: string) => void;
+    roles: Role[];
+    addRole: (data: Omit<Role, 'id'>) => void;
+    updateRole: (role: Role) => void;
+    deleteRole: (id: string) => void;
+    invoices: Invoice[];
+    auditLog: AuditLog[];
+    counties: County[];
+    addCounty: (data: { name: string }) => void;
+    updateCounty: (county: County) => void;
+    deleteCounty: (id: string) => void;
+    arenas: Arena[];
+    addArena: (data: { name: string; location: string; fields: string[] }) => void;
+    updateArena: (arena: Arena) => void;
+    deleteArena: (id: string) => void;
+    sanctions: Sanction[];
+    addSanction: (data: Omit<Sanction, 'id'>) => void;
+    updateSanction: (sanction: Sanction) => void;
+    deleteSanction: (id: string) => void;
+    referees: Referee[];
+    addReferee: (data: { name: string }) => void;
+    updateReferee: (referee: Referee) => void;
+    deleteReferee: (id: string) => void;
+    observers: Observer[];
+    addObserver: (data: { name: string }) => void;
+    updateObserver: (observer: Observer) => void;
+    deleteObserver: (id: string) => void;
+    calculateStandings: (competitionId: string, stage: string) => Standing[];
+    articles: Article[];
+    getArticleById: (id: string) => Article | undefined;
+    addArticle: (data: Omit<Article, 'id' | 'featuredImageUrl' | 'author' | 'createdAt'>, imageFile: File | null) => void;
+    updateArticle: (article: Article, imageFile: File | null) => void;
+    deleteArticle: (id: string) => void;
+    mediaImages: MediaImage[];
+    uploadImage: (competitionId: string, file: File) => void;
+    deleteImage: (id: string) => void;
+    galleries: Gallery[];
+    getGalleryById: (id: string) => Gallery | undefined;
+    addGallery: (data: Omit<Gallery, 'id'>) => void;
+    updateGallery: (gallery: Gallery) => void;
+    deleteGallery: (id: string) => void;
+    sponsors: Sponsor[];
+    addSponsor: (data: Omit<Sponsor, 'id' | 'logoUrl'>, logoFile?: File | null) => void;
+    updateSponsor: (sponsor: Sponsor, logoFile?: File | null) => void;
+    deleteSponsor: (id: string) => void;
+    updateCompetitionPublicConfig: (competitionId: string, config: PublicConfig, logoFile?: File | null) => void;
+    updateCompetitionRegulation: (competitionId: string, regulation: any) => void;
+    portalConfig: PortalConfig;
+    updatePortalConfig: (config: PortalConfig, logoFile?: File | null) => void;
+    transfers: Transfer[];
+    addTransfer: (data: Omit<Transfer, 'id'>) => void;
+    updateTransfer: (transfer: Transfer) => void;
+    deleteTransfer: (id: string) => void;
+    playerRegistrations: PlayerRegistration[];
+    addPlayerRegistration: (data: Omit<PlayerRegistration, 'id'>) => void;
+    updatePlayerRegistration: (reg: PlayerRegistration) => void;
+    deletePlayerRegistration: (id: string) => void;
 }
 
 const CompetitionContext = createContext<CompetitionContextType | undefined>(undefined);
 
-export const CompetitionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [competitions, setCompetitions] = useState<Competition[]>(MOCK_COMPETITIONS);
-    const [teams, setTeams] = useState<Team[]>(MOCK_TEAMS);
-    const [matches, setMatches] = useState<Match[]>(MOCK_MATCHES);
-    const [players, setPlayers] = useState<Player[]>(MOCK_PLAYERS);
-    const [arenas, setArenas] = useState<Arena[]>(MOCK_ARENAS);
-    const [users, setUsers] = useState<User[]>(MOCK_USERS);
-    const [currentUser, setCurrentUser] = useState<User | null>(MOCK_USERS[0]);
-    const [roles, setRoles] = useState<Role[]>(MOCK_ROLES);
-    const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings>(MOCK_ORGANIZATION_SETTINGS);
-    const [invoices, setInvoices] = useState<Invoice[]>(MOCK_INVOICES);
-    const [auditLog, setAuditLog] = useState<AuditLog[]>(MOCK_AUDIT_LOG);
-    const [sanctions, setSanctions] = useState<Sanction[]>(MOCK_SANCTIONS);
-    const [referees, setReferees] = useState<Referee[]>(MOCK_REFEREES);
-    const [observers, setObservers] = useState<Observer[]>(MOCK_OBSERVERS);
-    const [articles, setArticles] = useState<Article[]>(MOCK_ARTICLES);
-    const [mediaImages, setMediaImages] = useState<MediaImage[]>(MOCK_MEDIA_IMAGES);
-    const [galleries, setGalleries] = useState<Gallery[]>(MOCK_GALLERIES);
-    const [sponsors, setSponsors] = useState<Sponsor[]>(MOCK_SPONSORS);
-    const [transfers, setTransfers] = useState<Transfer[]>(MOCK_TRANSFERS);
-    const [playerRegistrations, setPlayerRegistrations] = useState<PlayerRegistration[]>(MOCK_PLAYER_REGISTRATIONS);
-    const [counties, setCounties] = useState<County[]>(MOCK_COUNTIES);
-    const [portalConfig, setPortalConfig] = useState<PortalConfig>(MOCK_PORTAL_CONFIG);
+export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    // All state managed here
+    const [teams, setTeams] = useState<Team[]>(mockTeams);
+    const [competitions, setCompetitions] = useState<Competition[]>(mockCompetitions);
+    const [matches, setMatches] = useState<Match[]>(mockMatches);
+    const [players, setPlayers] = useState<Player[]>(mockPlayers);
+    const [organizationSettings, setOrganizationSettings] = useState<OrganizationSettings>(mockOrganizationSettings);
+    const [users, setUsers] = useState<User[]>(mockUsers);
+    const [currentUser, setCurrentUserState] = useState<User | null>(mockUsers[0]);
+    const [roles, setRoles] = useState<Role[]>(mockRoles);
+    const [invoices] = useState<Invoice[]>(mockInvoices);
+    const [auditLog, setAuditLog] = useState<AuditLog[]>(mockAuditLog);
+    const [counties, setCounties] = useState<County[]>(mockCounties);
+    const [arenas, setArenas] = useState<Arena[]>(mockArenas);
+    const [sanctions, setSanctions] = useState<Sanction[]>(mockSanctions);
+    const [referees, setReferees] = useState<Referee[]>(mockReferees);
+    const [observers, setObservers] = useState<Observer[]>(mockObservers);
+    const [articles, setArticles] = useState<Article[]>(mockArticles);
+    const [mediaImages, setMediaImages] = useState<MediaImage[]>(mockMediaImages);
+    const [galleries, setGalleries] = useState<Gallery[]>(mockGalleries);
+    const [sponsors, setSponsors] = useState<Sponsor[]>(mockSponsors);
+    const [portalConfig, setPortalConfig] = useState<PortalConfig>(mockPortalConfig);
+    const [transfers, setTransfers] = useState<Transfer[]>(mockTransfers);
+    const [playerRegistrations, setPlayerRegistrations] = useState<PlayerRegistration[]>(mockPlayerRegistrations);
 
-    // Getters
-    const getCompetitionById = (id: string) => competitions.find(c => c.id === id);
-    const getMatchById = (id: string) => matches.find(m => m.id === id);
-    const getArticleById = (id: string) => articles.find(a => a.id === id);
-    const getGalleryById = (id: string) => galleries.find(g => g.id === id);
-    const getTransfersByPlayerId = (playerId: string) => transfers.filter(t => t.playerId === playerId).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    const getPlayerRegistrationsByPlayerId = (playerId: string) => playerRegistrations.filter(r => r.playerId === playerId).sort((a, b) => new Date(b.validUntil).getTime() - new Date(a.validUntil).getTime());
-
-
-    // Generic CRUD helpers
-    const crudHelper = <T extends { id: string }>(state: T[], setState: React.Dispatch<React.SetStateAction<T[]>>) => ({
-        add: (item: Omit<T, 'id'>) => setState(prev => [...prev, { ...item, id: `${typeof item}-${Date.now()}` } as T]),
-        update: (item: T) => setState(prev => prev.map(i => i.id === item.id ? item : i)),
-        remove: (id: string) => setState(prev => prev.filter(i => i.id !== id))
-    });
+    const logAction = (action: string, details: string) => {
+        const newLog: AuditLog = {
+            id: `log-${Date.now()}`,
+            userId: currentUser!.id,
+            userName: currentUser!.name,
+            action,
+            details,
+            timestamp: new Date().toISOString()
+        };
+        setAuditLog(prev => [newLog, ...prev]);
+    }
     
-    // CRUD Operations
-    const handleSetCurrentUser = (userId: string) => setCurrentUser(users.find(u => u.id === userId) || null);
-    
+    // Simple CRUD operations
+    const addTeam = (data: { name: string; country: string; logoFile?: File | null }) => {
+        const newTeam: Team = {
+            id: `team-${Date.now()}`,
+            name: data.name,
+            country: data.country,
+            logoUrl: data.logoFile ? URL.createObjectURL(data.logoFile) : `https://picsum.photos/seed/${Date.now()}/200`
+        };
+        setTeams(prev => [...prev, newTeam]);
+        logAction('Create Team', `Created team: ${data.name}`);
+    };
+
+    const updateTeam = (updatedTeam: Team) => {
+        setTeams(prev => prev.map(t => t.id === updatedTeam.id ? updatedTeam : t));
+        logAction('Update Team', `Updated team: ${updatedTeam.name}`);
+    };
+
+    const deleteTeam = (id: string) => {
+        const teamName = teams.find(t=> t.id === id)?.name || 'Unknown';
+        setTeams(prev => prev.filter(t => t.id !== id));
+        logAction('Delete Team', `Deleted team: ${teamName} (ID: ${id})`);
+    };
+
     const addCompetition = (data: any) => {
         const newComp: Competition = {
             id: `comp-${Date.now()}`,
             name: data.name,
             season: data.season,
-            logoUrl: data.logoFile ? URL.createObjectURL(data.logoFile) : 'https://picsum.photos/seed/comp-logo/200',
+            logoUrl: data.logoFile ? URL.createObjectURL(data.logoFile) : `https://picsum.photos/seed/${data.name}/200`,
             status: 'Upcoming',
             teamIds: [],
-            format: data.format,
-            twoLegged: data.twoLegged,
-            teamsPerGroup: data.teamsPerGroup,
-            county: data.county,
-            organizerId: data.organizerId
+            ...data
         };
         setCompetitions(prev => [...prev, newComp]);
+        logAction('Create Competition', `Created competition: ${data.name}`);
     };
-    const updateCompetition = (data: Competition & { logoFile?: File | null }) => {
-        if (data.logoFile) {
-            data.logoUrl = URL.createObjectURL(data.logoFile);
-            delete (data as any).logoFile;
-        }
-        setCompetitions(prev => prev.map(c => c.id === data.id ? data : c));
-    };
-    const deleteCompetition = (id: string) => setCompetitions(prev => prev.filter(c => c.id !== id));
-
-    const addTeam = (data: any) => {
-        const newTeam: Team = {
-            id: `team-${Date.now()}`,
-            name: data.name,
-            country: data.country,
-            logoUrl: data.logoFile ? URL.createObjectURL(data.logoFile) : 'https://picsum.photos/seed/team-logo/200',
-        };
-        setTeams(prev => [...prev, newTeam]);
-    };
-    const updateTeam = (data: Team & { logoFile?: File | null }) => {
-        const teamToUpdate = {...data};
-        if (teamToUpdate.logoFile) {
-            teamToUpdate.logoUrl = URL.createObjectURL(teamToUpdate.logoFile);
-        }
-        setTeams(prev => prev.map(t => t.id === teamToUpdate.id ? { id: t.id, name: teamToUpdate.name, country: teamToUpdate.country, logoUrl: teamToUpdate.logoUrl } : t));
-    };
-    const deleteTeam = (id: string) => setTeams(prev => prev.filter(t => t.id !== id));
     
-    const addPlayer = (data: any) => {
-        const newPlayer: Player = { id: `player-${Date.now()}`, name: data.name, teamId: data.teamId, stats: { goals: 0, assists: 0, yellowCards: 0, redCards: 0 } };
+    const updateCompetition = (updatedComp: Competition) => {
+        setCompetitions(prev => prev.map(c => c.id === updatedComp.id ? updatedComp : c));
+        logAction('Update Competition', `Updated competition: ${updatedComp.name}`);
+    };
+
+    const deleteCompetition = (id: string) => {
+        const compName = competitions.find(c => c.id === id)?.name || 'Unknown';
+        setCompetitions(prev => prev.filter(c => c.id !== id));
+        logAction('Delete Competition', `Deleted competition: ${compName} (ID: ${id})`);
+    };
+
+    const addPlayer = (data: { name: string; teamId: string; }) => {
+        const newPlayer: Player = {
+            id: `player-${Date.now()}`,
+            name: data.name,
+            teamId: data.teamId,
+            stats: { goals: 0, assists: 0, yellowCards: 0, redCards: 0 }
+        };
         setPlayers(prev => [...prev, newPlayer]);
+        logAction('Add Player', `Added player: ${data.name}`);
     };
-    const updatePlayer = (data: Player) => setPlayers(prev => prev.map(p => p.id === data.id ? data : p));
-    const deletePlayer = (id: string) => setPlayers(prev => prev.filter(p => p.id !== id));
 
-    const addArena = (data: any) => {
-        const newArena: Arena = { id: `arena-${Date.now()}`, name: data.name, location: data.location, fields: data.fields };
-        setArenas(prev => [...prev, newArena]);
+    const updatePlayer = (updatedPlayer: Player) => {
+        setPlayers(prev => prev.map(p => p.id === updatedPlayer.id ? updatedPlayer : p));
+        logAction('Update Player', `Updated player: ${updatedPlayer.name}`);
     };
-    const updateArena = (data: Arena) => setArenas(prev => prev.map(a => a.id === data.id ? data : a));
-    const deleteArena = (id: string) => setArenas(prev => prev.filter(a => a.id !== id));
 
-    const addReferee = (data: any) => setReferees(prev => [...prev, { id: `ref-${Date.now()}`, name: data.name }]);
-    const updateReferee = (data: Referee) => setReferees(prev => prev.map(r => r.id === data.id ? data : r));
-    const deleteReferee = (id: string) => setReferees(prev => prev.filter(r => r.id !== id));
+    const deletePlayer = (id: string) => {
+        const playerName = players.find(p => p.id === id)?.name || 'Unknown';
+        setPlayers(prev => prev.filter(p => p.id !== id));
+        logAction('Delete Player', `Deleted player: ${playerName} (ID: ${id})`);
+    };
+    
+    const getCompetitionById = useCallback((id: string) => competitions.find(c => c.id === id), [competitions]);
+    const getMatchById = useCallback((id: string) => matches.find(m => m.id === id), [matches]);
 
-    const addObserver = (data: any) => setObservers(prev => [...prev, { id: `obs-${Date.now()}`, name: data.name }]);
-    const updateObserver = (data: Observer) => setObservers(prev => prev.map(o => o.id === data.id ? data : o));
-    const deleteObserver = (id: string) => setObservers(prev => prev.filter(o => o.id !== id));
-
-    const addSanction = (data: Omit<Sanction, 'id'>) => setSanctions(prev => [...prev, { ...data, id: `sanction-${Date.now()}` }]);
-    const updateSanction = (data: Sanction) => setSanctions(prev => prev.map(s => s.id === data.id ? data : s));
-    const deleteSanction = (id: string) => setSanctions(prev => prev.filter(s => s.id !== id));
-
-    const updateMatch = (data: Match) => setMatches(prev => prev.map(m => m.id === data.id ? data : m));
-
+    const updateMatch = (updatedMatch: Match) => {
+        setMatches(prev => prev.map(m => m.id === updatedMatch.id ? updatedMatch : m));
+        // Avoid logging for every tick of a live match, only log significant status changes
+        if (updatedMatch.events.length > (matches.find(m=>m.id === updatedMatch.id)?.events.length ?? 0)) {
+            logAction('Update Match', `Event added to ${updatedMatch.homeTeam.name} vs ${updatedMatch.awayTeam.name}`);
+        }
+    };
+    
     const addTeamToCompetition = (competitionId: string, teamId: string) => {
         setCompetitions(prev => prev.map(c => c.id === competitionId ? { ...c, teamIds: [...c.teamIds, teamId] } : c));
     };
 
-    const generateBergerSchedule = (competitionId: string) => {
-        const competition = competitions.find(c => c.id === competitionId);
-        if (!competition) return;
-
-        const competitionTeams = teams.filter(t => competition.teamIds.includes(t.id));
-        if (competitionTeams.length < 2) {
-            alert("Not enough teams to generate a schedule.");
-            return;
+    const updateOrganizationSettings = (settings: OrganizationSettings, logoFile?: File | null) => {
+        if (logoFile) {
+            settings.logoUrl = URL.createObjectURL(logoFile);
         }
-
-        const schedule = generateBergerTable(competitionTeams);
-        const newMatches: Match[] = [];
-        let matchDate = new Date();
-
-        schedule.forEach((round, roundIndex) => {
-            round.forEach(pairing => {
-                if (pairing.home.id !== 'bye' && pairing.away.id !== 'bye') {
-                    const homeTeam = pairing.home as Team;
-                    const awayTeam = pairing.away as Team;
-                    newMatches.push({
-                        id: `match-${competitionId}-${homeTeam.id}-${awayTeam.id}`,
-                        competitionId,
-                        homeTeam,
-                        awayTeam,
-                        date: new Date(matchDate.getTime() + (roundIndex * 7 * 24 * 60 * 60 * 1000)).toISOString(),
-                        status: 'Not Started',
-                        homeScore: 0,
-                        awayScore: 0,
-                        events: [],
-                        stage: `Round ${roundIndex + 1}`
-                    });
-                }
-            });
-        });
-
-        // Remove old schedule for this competition and add new one
-        setMatches(prev => [...prev.filter(m => m.competitionId !== competitionId), ...newMatches]);
+        setOrganizationSettings(settings);
+        logAction('Update Settings', 'Updated organization settings');
     };
     
+    const setCurrentUser = (id: string) => {
+        const user = users.find(u => u.id === id);
+        if (user) setCurrentUserState(user);
+    };
+
+    const inviteUser = (email: string, roleId: string) => {
+        const newUser: User = {
+            id: `user-${Date.now()}`,
+            name: email.split('@')[0], // Simple name generation
+            email,
+            roleId,
+            status: 'PENDING'
+        };
+        setUsers(prev => [...prev, newUser]);
+        logAction('Invite User', `Invited user: ${email}`);
+    };
+
+    const updateUser = (updatedUser: User) => {
+        setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+        logAction('Update User', `Updated user: ${updatedUser.name}`);
+    };
+    
+    const deleteUser = (id: string) => {
+        const userName = users.find(u => u.id === id)?.name || 'Unknown';
+        setUsers(prev => prev.filter(u => u.id !== id));
+        logAction('Delete User', `Deleted user: ${userName}`);
+    };
+    
+    const addRole = (data: Omit<Role, 'id'>) => {
+        const newRole: Role = { id: `role-${Date.now()}`, ...data };
+        setRoles(prev => [...prev, newRole]);
+        logAction('Create Role', `Created role: ${data.name}`);
+    };
+
+    const updateRole = (updatedRole: Role) => {
+        setRoles(prev => prev.map(r => r.id === updatedRole.id ? updatedRole : r));
+        logAction('Update Role', `Updated role: ${updatedRole.name}`);
+    };
+
+    const deleteRole = (id: string) => {
+        const roleName = roles.find(r => r.id === id)?.name || 'Unknown';
+        setRoles(prev => prev.filter(r => r.id !== id));
+        logAction('Delete Role', `Deleted role: ${roleName}`);
+    };
+    
+    const addCounty = (data: { name: string }) => {
+        setCounties(prev => [...prev, { id: `county-${Date.now()}`, ...data }]);
+    };
+    const updateCounty = (county: County) => {
+        setCounties(prev => prev.map(c => c.id === county.id ? county : c));
+    };
+    const deleteCounty = (id: string) => {
+        setCounties(prev => prev.filter(c => c.id !== id));
+    };
+    
+    const addArena = (data: { name: string; location: string; fields: string[] }) => {
+        setArenas(prev => [...prev, { id: `arena-${Date.now()}`, ...data }]);
+    };
+    const updateArena = (arena: Arena) => {
+        setArenas(prev => prev.map(a => a.id === arena.id ? arena : a));
+    };
+    const deleteArena = (id: string) => {
+        setArenas(prev => prev.filter(a => a.id !== id));
+    };
+
+    const addSanction = (data: Omit<Sanction, 'id'>) => {
+        setSanctions(prev => [...prev, { id: `sanction-${Date.now()}`, ...data }]);
+    };
+    const updateSanction = (sanction: Sanction) => {
+        setSanctions(prev => prev.map(s => s.id === sanction.id ? sanction : s));
+    };
+    const deleteSanction = (id: string) => {
+        setSanctions(prev => prev.filter(s => s.id !== id));
+    };
+
+    const addReferee = (data: {name: string}) => setReferees(prev => [...prev, {id: `ref-${Date.now()}`, ...data}]);
+    const updateReferee = (ref: Referee) => setReferees(prev => prev.map(r => r.id === ref.id ? ref : r));
+    const deleteReferee = (id: string) => setReferees(prev => prev.filter(r => r.id !== id));
+
+    const addObserver = (data: {name: string}) => setObservers(prev => [...prev, {id: `obs-${Date.now()}`, ...data}]);
+    const updateObserver = (obs: Observer) => setObservers(prev => prev.map(o => o.id === obs.id ? obs : o));
+    const deleteObserver = (id: string) => setObservers(prev => prev.filter(o => o.id !== id));
+
+    const getTransfersByPlayerId = (playerId: string) => transfers.filter(t => t.playerId === playerId);
+    const getPlayerRegistrationsByPlayerId = (playerId: string) => playerRegistrations.filter(pr => pr.playerId === playerId);
+
     const calculateStandings = (competitionId: string, stage: string): Standing[] => {
         const competition = competitions.find(c => c.id === competitionId);
         if (!competition) return [];
-
-        const competitionTeams = teams.filter(t => competition.teamIds.includes(t.id));
         const competitionMatches = matches.filter(m => m.competitionId === competitionId && m.status === 'Finished');
-
         const standingsMap: { [teamId: string]: Standing } = {};
 
-        competitionTeams.forEach(team => {
-            standingsMap[team.id] = {
-                teamId: team.id,
-                teamName: team.name,
-                logoUrl: team.logoUrl,
-                played: 0, wins: 0, draws: 0, losses: 0,
-                goalsFor: 0, goalsAgainst: 0, goalDifference: 0, points: 0
-            };
+        competition.teamIds.forEach(teamId => {
+            const team = teams.find(t => t.id === teamId);
+            if (team) {
+                standingsMap[teamId] = {
+                    teamId, teamName: team.name, logoUrl: team.logoUrl, played: 0, wins: 0, losses: 0, draws: 0,
+                    goalsFor: 0, goalsAgainst: 0, goalDifference: 0, points: 0
+                };
+            }
         });
 
         competitionMatches.forEach(match => {
             const home = standingsMap[match.homeTeam.id];
             const away = standingsMap[match.awayTeam.id];
-            
             if (!home || !away) return;
 
             home.played++; away.played++;
             home.goalsFor += match.homeScore; away.goalsFor += match.awayScore;
             home.goalsAgainst += match.awayScore; away.goalsAgainst += match.homeScore;
-            home.goalDifference = home.goalsFor - home.goalsAgainst;
-            away.goalDifference = away.goalsFor - away.goalsAgainst;
 
             if (match.homeScore > match.awayScore) {
                 home.wins++; away.losses++; home.points += 3;
@@ -293,158 +354,179 @@ export const CompetitionProvider: React.FC<{ children: React.ReactNode }> = ({ c
             }
         });
 
-        return Object.values(standingsMap).sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference || b.goalsFor - a.goalsFor || a.teamName.localeCompare(b.teamName));
-    };
-
-    const inviteUser = (email: string, roleId: string) => {
-        const newUser: User = { id: `user-${Date.now()}`, name: email.split('@')[0], email, roleId, status: 'PENDING' };
-        setUsers(prev => [...prev, newUser]);
-    };
-    const updateUser = (user: User) => setUsers(prev => prev.map(u => u.id === user.id ? user : u));
-    const deleteUser = (userId: string) => setUsers(prev => prev.filter(u => u.id !== userId));
-
-    const addRole = (role: Omit<Role, 'id'>) => setRoles(prev => [...prev, { ...role, id: `role-${Date.now()}` }]);
-    const updateRole = (role: Role) => setRoles(prev => prev.map(r => r.id === role.id ? role : r));
-    const deleteRole = (roleId: string) => setRoles(prev => prev.filter(r => r.id !== roleId));
-
-    const addCounty = (county: Omit<County, 'id'>) => setCounties(prev => [...prev, { ...county, id: `county-${Date.now()}` }]);
-    const updateCounty = (county: County) => setCounties(prev => prev.map(c => c.id === county.id ? county : c));
-    const deleteCounty = (countyId: string) => setCounties(prev => prev.filter(c => c.id !== countyId));
-
-    const updateOrganizationSettings = (settings: OrganizationSettings, logoFile: File | null) => {
-        const newSettings = { ...settings };
-        if (logoFile) {
-            newSettings.logoUrl = URL.createObjectURL(logoFile);
-        }
-        setOrganizationSettings(newSettings);
-    };
-
-    const updateCompetitionPublicConfig = (competitionId: string, config: PublicConfig, logoFile: File | null) => {
-        setCompetitions(prev => prev.map(c => {
-            if (c.id === competitionId) {
-                const newConfig = { ...c.publicConfig, ...config };
-                if (logoFile) {
-                    newConfig.logoUrl = URL.createObjectURL(logoFile);
-                }
-                return { ...c, publicConfig: newConfig };
-            }
-            return c;
-        }));
+        return Object.values(standingsMap).map(s => ({...s, goalDifference: s.goalsFor - s.goalsAgainst}))
+            .sort((a, b) => b.points - a.points || b.goalDifference - a.goalDifference || b.goalsFor - a.goalsFor);
     };
     
+    const generateBergerSchedule = (competitionId: string) => {
+        const competition = competitions.find(c => c.id === competitionId);
+        if (!competition) return;
+        
+        const competitionTeams = teams.filter(t => competition.teamIds.includes(t.id));
+        const schedule = generateBergerTable(competitionTeams);
+        
+        const newMatches: Match[] = [];
+        let date = new Date();
+        
+        schedule.forEach((round, roundIndex) => {
+            date.setDate(date.getDate() + 7); // Advance by one week for each round
+            round.forEach(pairing => {
+                if (pairing.home.id !== 'bye' && pairing.away.id !== 'bye') {
+                    newMatches.push({
+                        id: `match-${competitionId}-${pairing.home.id}-${pairing.away.id}`,
+                        competitionId,
+                        homeTeam: pairing.home as Team,
+                        awayTeam: pairing.away as Team,
+                        homeScore: 0,
+                        awayScore: 0,
+                        date: new Date(date).toISOString(),
+                        status: 'Not Started',
+                        events: [],
+                        stage: `Round ${roundIndex + 1}`
+                    });
+                }
+            });
+        });
+        
+        // Remove old schedule and add new one
+        setMatches(prev => [...prev.filter(m => m.competitionId !== competitionId), ...newMatches]);
+        logAction('Generate Schedule', `Generated schedule for ${competition.name}`);
+    };
+
+    const getArticleById = (id: string) => articles.find(a => a.id === id);
     const addArticle = (data: Omit<Article, 'id' | 'featuredImageUrl' | 'author' | 'createdAt'>, imageFile: File | null) => {
         const newArticle: Article = {
-            ...data,
-            id: `article-${Date.now()}`,
+            id: `art-${Date.now()}`,
             featuredImageUrl: imageFile ? URL.createObjectURL(imageFile) : 'https://picsum.photos/seed/article/800/400',
             author: currentUser?.name || 'Admin',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            ...data
         };
-        setArticles(prev => [newArticle, ...prev]);
+        setArticles(prev => [...prev, newArticle]);
     };
-    const updateArticle = (data: Article, imageFile: File | null) => {
-        const updatedArticle = { ...data };
+    const updateArticle = (article: Article, imageFile: File | null) => {
         if (imageFile) {
-            updatedArticle.featuredImageUrl = URL.createObjectURL(imageFile);
+            article.featuredImageUrl = URL.createObjectURL(imageFile);
         }
-        setArticles(prev => prev.map(a => a.id === data.id ? updatedArticle : a));
+        setArticles(prev => prev.map(a => a.id === article.id ? article : a));
     };
-    const deleteArticle = (articleId: string) => setArticles(prev => prev.filter(a => a.id !== articleId));
+    const deleteArticle = (id: string) => setArticles(prev => prev.filter(a => a.id !== id));
 
-    const uploadImage = (competitionId: string, imageFile: File) => {
+    const uploadImage = (competitionId: string, file: File) => {
         const newImage: MediaImage = {
-            id: `media-${Date.now()}`,
+            id: `img-${Date.now()}`,
             competitionId,
-            url: URL.createObjectURL(imageFile),
-            uploadedAt: new Date().toISOString(),
+            url: URL.createObjectURL(file)
         };
         setMediaImages(prev => [newImage, ...prev]);
     };
-    const deleteImage = (imageId: string) => {
-        setMediaImages(prev => prev.filter(img => img.id !== imageId));
-        setGalleries(prev => prev.map(g => ({ ...g, imageIds: g.imageIds.filter(id => id !== imageId) })));
+    const deleteImage = (id: string) => {
+        setMediaImages(prev => prev.filter(img => img.id !== id));
+        // Also remove from any galleries
+        setGalleries(prev => prev.map(g => ({...g, imageIds: g.imageIds.filter(imgId => imgId !== id) })));
     };
-
-    const addGallery = (data: Omit<Gallery, 'id'>) => setGalleries(prev => [{ ...data, id: `gallery-${Date.now()}`}, ...prev]);
-    const updateGallery = (data: Gallery) => setGalleries(prev => prev.map(g => g.id === data.id ? data : g));
-    const deleteGallery = (galleryId: string) => setGalleries(prev => prev.filter(g => g.id !== galleryId));
     
-    const addSponsor = (data: Omit<Sponsor, 'id' | 'logoUrl'>, logoFile: File | null) => {
+    const getGalleryById = (id: string) => galleries.find(g => g.id === id);
+    const addGallery = (data: Omit<Gallery, 'id'>) => {
+        const newGallery: Gallery = { id: `gal-${Date.now()}`, ...data };
+        setGalleries(prev => [...prev, newGallery]);
+    };
+    const updateGallery = (gallery: Gallery) => {
+        setGalleries(prev => prev.map(g => g.id === gallery.id ? gallery : g));
+    };
+    const deleteGallery = (id: string) => setGalleries(prev => prev.filter(g => g.id !== id));
+    
+    const addSponsor = (data: Omit<Sponsor, 'id'|'logoUrl'>, logoFile?: File | null) => {
         const newSponsor: Sponsor = {
-            ...data,
-            id: `sponsor-${Date.now()}`,
+            id: `spn-${Date.now()}`,
             logoUrl: logoFile ? URL.createObjectURL(logoFile) : 'https://picsum.photos/seed/sponsor/200/100',
+            ...data
         };
         setSponsors(prev => [...prev, newSponsor]);
     };
-    const updateSponsor = (data: Sponsor, logoFile: File | null) => {
-        const updatedSponsor = { ...data };
+    const updateSponsor = (sponsor: Sponsor, logoFile?: File | null) => {
         if (logoFile) {
-            updatedSponsor.logoUrl = URL.createObjectURL(logoFile);
+            sponsor.logoUrl = URL.createObjectURL(logoFile);
         }
-        setSponsors(prev => prev.map(s => s.id === data.id ? updatedSponsor : s));
+        setSponsors(prev => prev.map(s => s.id === sponsor.id ? sponsor : s));
     };
-    const deleteSponsor = (sponsorId: string) => setSponsors(prev => prev.filter(s => s.id !== sponsorId));
+    const deleteSponsor = (id: string) => setSponsors(prev => prev.filter(s => s.id !== id));
 
-    const updateCompetitionRegulation = (competitionId: string, regulation: Regulation) => {
+    const updateCompetitionPublicConfig = (competitionId: string, config: PublicConfig, logoFile?: File | null) => {
+        if (logoFile) {
+            config.logoUrl = URL.createObjectURL(logoFile);
+        }
+        setCompetitions(prev => prev.map(c => c.id === competitionId ? {...c, publicConfig: config} : c));
+    };
+    
+    const updateCompetitionRegulation = (competitionId: string, regulation: any) => {
         setCompetitions(prev => prev.map(c => {
-            if (c.id === competitionId) {
-                const existingRegs = c.publicConfig?.regulations || [];
-                const newRegs = existingRegs.find(r => r.id === regulation.id)
-                    ? existingRegs.map(r => r.id === regulation.id ? regulation : r)
-                    : [...existingRegs, regulation];
-                return { ...c, publicConfig: { ...c.publicConfig!, regulations: newRegs } };
+            if (c.id === competitionId && c.publicConfig) {
+                const regs = c.publicConfig.regulations;
+                const regIndex = regs.findIndex(r => r.id === regulation.id);
+                if (regIndex > -1) {
+                    regs[regIndex] = regulation;
+                } else {
+                    regs.push(regulation);
+                }
+                return {...c, publicConfig: {...c.publicConfig, regulations: regs }};
             }
             return c;
         }));
     };
+
+    const updatePortalConfig = (config: PortalConfig, logoFile?: File | null) => {
+        if (logoFile) {
+            config.logoUrl = URL.createObjectURL(logoFile);
+        }
+        setPortalConfig(config);
+    };
     
     const addTransfer = (data: Omit<Transfer, 'id'>) => {
-        setTransfers(prev => [{ ...data, id: `transfer-${Date.now()}`}, ...prev]);
+        setTransfers(prev => [...prev, { id: `trn-${Date.now()}`, ...data }]);
         // Also update the player's team
-        setPlayers(prev => prev.map(p => p.id === data.playerId ? { ...p, teamId: data.toTeamId } : p));
+        setPlayers(prev => prev.map(p => p.id === data.playerId ? {...p, teamId: data.toTeamId} : p));
     };
-    const updateTransfer = (data: Transfer) => setTransfers(prev => prev.map(t => t.id === data.id ? data : t));
-    const deleteTransfer = (id: string) => setTransfers(prev => prev.filter(t => t.id !== id));
-    
-    const addPlayerRegistration = (data: Omit<PlayerRegistration, 'id'>) => setPlayerRegistrations(prev => [{...data, id: `reg-${Date.now()}`}, ...prev]);
-    const updatePlayerRegistration = (data: PlayerRegistration) => setPlayerRegistrations(prev => prev.map(r => r.id === data.id ? data : r));
-    const deletePlayerRegistration = (id: string) => setPlayerRegistrations(prev => prev.filter(r => r.id !== id));
-
-    const updatePortalConfig = (config: PortalConfig, logoFile: File | null) => {
-        const newConfig = { ...config };
-        if (logoFile) {
-            newConfig.logoUrl = URL.createObjectURL(logoFile);
-        }
-        setPortalConfig(newConfig);
+    const updateTransfer = (transfer: Transfer) => {
+        setTransfers(prev => prev.map(t => t.id === transfer.id ? transfer : t));
+    };
+    const deleteTransfer = (id: string) => {
+        setTransfers(prev => prev.filter(t => t.id !== id));
     };
 
-    const value: CompetitionContextType = {
-        competitions, teams, matches, players, arenas, users, currentUser, roles, organizationSettings, invoices, auditLog, sanctions, referees, observers, articles, mediaImages, galleries, sponsors, transfers, playerRegistrations, counties, portalConfig,
-        getCompetitionById, getMatchById, getArticleById, getGalleryById, getTransfersByPlayerId, getPlayerRegistrationsByPlayerId,
-        addCompetition, updateCompetition, deleteCompetition,
-        addTeam, updateTeam, deleteTeam,
-        addPlayer, updatePlayer, deletePlayer,
-        addArena, updateArena, deleteArena,
-        addReferee, updateReferee, deleteReferee,
-        addObserver, updateObserver, deleteObserver,
-        addSanction, updateSanction, deleteSanction,
-        updateMatch,
-        addTeamToCompetition, generateBergerSchedule, calculateStandings,
-        setCurrentUser: handleSetCurrentUser,
-        inviteUser, updateUser, deleteUser,
-        addRole, updateRole, deleteRole,
-        addCounty, updateCounty, deleteCounty,
-        updateOrganizationSettings,
-        updateCompetitionPublicConfig,
-        addArticle, updateArticle, deleteArticle,
-        uploadImage, deleteImage,
-        addGallery, updateGallery, deleteGallery,
-        addSponsor, updateSponsor, deleteSponsor,
-        updateCompetitionRegulation,
-        addTransfer, updateTransfer, deleteTransfer,
-        addPlayerRegistration, updatePlayerRegistration, deletePlayerRegistration,
-        updatePortalConfig,
+    const addPlayerRegistration = (data: Omit<PlayerRegistration, 'id'>) => {
+        setPlayerRegistrations(prev => [...prev, { id: `reg-${Date.now()}`, ...data }]);
+    };
+    const updatePlayerRegistration = (reg: PlayerRegistration) => {
+        setPlayerRegistrations(prev => prev.map(r => r.id === reg.id ? reg : r));
+    };
+    const deletePlayerRegistration = (id: string) => {
+        setPlayerRegistrations(prev => prev.filter(r => r.id !== id));
+    };
+
+    const value = {
+        teams, addTeam, updateTeam, deleteTeam,
+        competitions, getCompetitionById, addCompetition, updateCompetition, deleteCompetition, addTeamToCompetition,
+        matches, getMatchById, updateMatch, generateBergerSchedule,
+        players, addPlayer, updatePlayer, deletePlayer, getTransfersByPlayerId, getPlayerRegistrationsByPlayerId,
+        organizationSettings, updateOrganizationSettings,
+        currentUser, users, setCurrentUser, inviteUser, updateUser, deleteUser,
+        roles, addRole, updateRole, deleteRole,
+        invoices, auditLog,
+        counties, addCounty, updateCounty, deleteCounty,
+        arenas, addArena, updateArena, deleteArena,
+        sanctions, addSanction, updateSanction, deleteSanction,
+        referees, addReferee, updateReferee, deleteReferee,
+        observers, addObserver, updateObserver, deleteObserver,
+        calculateStandings,
+        articles, getArticleById, addArticle, updateArticle, deleteArticle,
+        mediaImages, uploadImage, deleteImage,
+        galleries, getGalleryById, addGallery, updateGallery, deleteGallery,
+        sponsors, addSponsor, updateSponsor, deleteSponsor,
+        updateCompetitionPublicConfig, updateCompetitionRegulation,
+        portalConfig, updatePortalConfig,
+        transfers, addTransfer, updateTransfer, deleteTransfer,
+        playerRegistrations, addPlayerRegistration, updatePlayerRegistration, deletePlayerRegistration,
     };
 
     return (
@@ -454,7 +536,8 @@ export const CompetitionProvider: React.FC<{ children: React.ReactNode }> = ({ c
     );
 };
 
-export const useCompetitions = () => {
+// Custom hook to use the context
+export const useCompetitions = (): CompetitionContextType => {
     const context = useContext(CompetitionContext);
     if (context === undefined) {
         throw new Error('useCompetitions must be used within a CompetitionProvider');

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCompetitions } from '../../context/CompetitionContext.tsx';
 import { VideoCameraIcon } from '../icons/Icons.tsx';
@@ -51,7 +52,7 @@ const PublicArticlesList: React.FC<PublicArticlesListProps> = ({ competitionId }
     <section>
       <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">Latest News & Live</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {showLiveStream && mainEmbedUrl && (
+        {showLiveStream && mainEmbedUrl && mainLiveMatch && (
           <div className="block bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="aspect-w-16 aspect-h-9">
               <iframe
@@ -67,7 +68,7 @@ const PublicArticlesList: React.FC<PublicArticlesListProps> = ({ competitionId }
                 <div>
                     <h3 className="text-xl font-bold flex items-start">
                         <VideoCameraIcon className="h-6 w-6 mr-3 text-white animate-pulse flex-shrink-0 mt-1"/>
-                        <span className="line-clamp-2">Live View: {mainLiveMatch!.homeTeam.name} vs {mainLiveMatch!.awayTeam.name}</span>
+                        <span className="line-clamp-2">Live View: {mainLiveMatch.homeTeam.name} vs {mainLiveMatch.awayTeam.name}</span>
                     </h3>
                 </div>
                 {otherLiveMatches.length > 0 && (

@@ -16,7 +16,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ setPage }) => {
-    const { competitions, matches, teams } = useCompetitions();
+    const { competitions, matches } = useCompetitions();
     const ongoingCompetitions = competitions.filter(c => c.status === 'Ongoing');
     
     const recentMatches = matches

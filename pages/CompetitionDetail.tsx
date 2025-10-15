@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 // FIX: Added .ts extension to module import.
-import type { Page, Team, Sanction } from '../types.ts';
+import type { Sanction } from '../types.ts';
 import Card from '../components/ui/Card.tsx';
 // FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
@@ -24,7 +24,7 @@ interface CompetitionDetailProps {
 
 const CompetitionDetail: React.FC<CompetitionDetailProps> = ({ competitionId, onBack, onManageLiveMatch }) => {
     const { 
-        getCompetitionById, teams, matches, addTeamToCompetition, 
+        getCompetitionById, teams, matches, 
         generateBergerSchedule, calculateStandings, sanctions, addSanction, 
         updateSanction, deleteSanction, players 
     } = useCompetitions();
@@ -133,12 +133,12 @@ const CompetitionDetail: React.FC<CompetitionDetailProps> = ({ competitionId, on
                         <h2 className="text-xl font-bold mb-4">Standings</h2>
                         <div className="overflow-x-auto">
                             <table className="min-w-full">
-                                <thead><tr><th className="px-4 py-2 text-left">Team</th><th className="px-4 py-2 text-center">P</th><th className="px-4 py-2 text-center">W</th><th className="px-4 py-2 text-center">L</th><th className="px-4 py-2 text-center">GD</th><th className="px-4 py-2 text-center">Pts</th></tr></thead>
+                                <thead><tr><th className="px-4 py-2 text-left">Team</th><th className="px-4 py-2 text-center">P</th><th className="px-4 py-2 text-center">W</th><th className="px-4 py-2 text-center">D</th><th className="px-4 py-2 text-center">L</th><th className="px-4 py-2 text-center">GD</th><th className="px-4 py-2 text-center">Pts</th></tr></thead>
                                 <tbody>
                                     {standings.map(s => (
                                         <tr key={s.teamId}>
                                             <td className="px-4 py-2 flex items-center"><img src={s.logoUrl} alt={s.teamName} className="h-6 w-6 mr-2 rounded-full"/>{s.teamName}</td>
-                                            <td className="px-4 py-2 text-center">{s.played}</td><td className="px-4 py-2 text-center">{s.wins}</td><td className="px-4 py-2 text-center">{s.losses}</td><td className="px-4 py-2 text-center">{s.goalDifference}</td><td className="px-4 py-2 text-center font-bold">{s.points}</td>
+                                            <td className="px-4 py-2 text-center">{s.played}</td><td className="px-4 py-2 text-center">{s.wins}</td><td className="px-4 py-2 text-center">{s.draws}</td><td className="px-4 py-2 text-center">{s.losses}</td><td className="px-4 py-2 text-center">{s.goalDifference}</td><td className="px-4 py-2 text-center font-bold">{s.points}</td>
                                         </tr>
                                     ))}
                                 </tbody>

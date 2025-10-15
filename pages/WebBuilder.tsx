@@ -2,14 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 // FIX: Added .ts extension to module import to resolve module resolution error.
-import type { PublicConfig, Match, Announcement, Regulation, CommitteeMember } from '../types.ts';
+import type { PublicConfig, Announcement, CommitteeMember } from '../types.ts';
 // FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from '../components/ui/Button.tsx';
-import { ChevronLeftIcon } from '../components/icons/Icons.tsx';
+import { ChevronLeftIcon, PlusIcon } from '../components/icons/Icons.tsx';
 import Modal from '../components/ui/Modal.tsx';
 import AnnouncementForm from '../components/AnnouncementForm.tsx';
 import CommitteeMemberForm from '../components/CommitteeMemberForm.tsx';
-import { PlusIcon, XMarkIcon } from '../components/icons/Icons.tsx';
 
 interface WebBuilderProps {
   competitionId: string;

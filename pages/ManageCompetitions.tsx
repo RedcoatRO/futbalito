@@ -22,7 +22,7 @@ interface ManageCompetitionsProps {
 }
 
 const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewCompetition}) => {
-  const { competitions, matches, addCompetition, updateCompetition, deleteCompetition, users } = useCompetitions();
+  const { competitions, addCompetition, updateCompetition, deleteCompetition, users } = useCompetitions();
   const { hasPermission } = usePermissions();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCompetition, setEditingCompetition] = useState<Competition | null>(null);

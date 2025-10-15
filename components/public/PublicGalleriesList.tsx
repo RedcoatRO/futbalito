@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../../context/CompetitionContext.tsx';

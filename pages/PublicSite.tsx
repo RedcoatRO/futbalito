@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCompetitions } from '../context/CompetitionContext.tsx';
 import { ShieldCheckIcon } from '../components/icons/Icons.tsx';

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 // FIX: Added .ts extension to module import.
-import type { Match, MatchEvent, Player } from '../types.ts';
+import type { Match, MatchEvent } from '../types.ts';
 // FIX: Added .ts extension to module import.
 import { MatchEventType } from '../types.ts';
 // FIX: Added .tsx extension to module import to resolve module resolution error.

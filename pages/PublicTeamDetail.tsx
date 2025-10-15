@@ -1,12 +1,16 @@
 import React from 'react';
+import Card from '../components/ui/Card.tsx';
 
 const PublicTeamDetail: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center p-8">
-        <h1 className="text-2xl font-bold text-gray-700">Team Detail Page</h1>
-        <p className="text-gray-500 mt-2">This feature is coming soon.</p>
-      </div>
+    <div>
+      <h1 className="text-3xl font-bold text-gray-800">Public Team Detail</h1>
+      <p className="mt-2 text-gray-600">This feature is under construction.</p>
+      <Card className="mt-8">
+        <p className="text-center text-gray-500">
+          This page will display public details for a specific team.
+        </p>
+      </Card>
     </div>
   );
 };

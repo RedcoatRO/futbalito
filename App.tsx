@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, 'react';
 import Sidebar from './components/Sidebar.tsx';
 import Header from './components/Header.tsx';
 import Dashboard from './pages/Dashboard.tsx';
@@ -9,13 +9,15 @@ import CompetitionDetail from './pages/CompetitionDetail.tsx';
 import LiveMatch from './pages/LiveMatch.tsx';
 import ManageTeams from './pages/ManageTeams.tsx';
 import ManagePlayers from './pages/ManagePlayers.tsx';
-import PlayerDetail from './pages/PlayerDetail.tsx';
 import ManageArenas from './pages/ManageArenas.tsx';
 import ManageReferees from './pages/ManageReferees.tsx';
 import ManageObservers from './pages/ManageObservers.tsx';
 import ManageOrganizers from './pages/ManageOrganizers.tsx';
 import ManageNationalTeam from './pages/ManageNationalTeam.tsx';
 import Publish from './pages/Publish.tsx';
+import Reports from './pages/Reports.tsx';
+import Marketplace from './pages/Marketplace.tsx';
+import Settings from './pages/Settings.tsx';
 import WebBuilder from './pages/WebBuilder.tsx';
 import PortalBuilder from './pages/PortalBuilder.tsx';
 import ManageArticles from './pages/ManageArticles.tsx';
@@ -24,195 +26,176 @@ import ManageMedia from './pages/ManageMedia.tsx';
 import EditGallery from './pages/EditGallery.tsx';
 import ManageSponsors from './pages/ManageSponsors.tsx';
 import ManageRegulations from './pages/ManageRegulations.tsx';
-import Reports from './pages/Reports.tsx';
-import Marketplace from './pages/Marketplace.tsx';
-import Settings from './pages/Settings.tsx';
+import PlayerDetail from './pages/PlayerDetail.tsx';
+// Public Pages
 import PublicSite from './pages/PublicSite.tsx';
+import PublicPortalSite from './pages/PublicPortalSite.tsx';
 import PublicArticleDetail from './pages/PublicArticleDetail.tsx';
 import PublicGalleryDetail from './pages/PublicGalleryDetail.tsx';
 import PublicAllLiveStreams from './pages/PublicAllLiveStreams.tsx';
-import PublicPortalSite from './pages/PublicPortalSite.tsx';
+
 
 import type { Page } from './types.ts';
 
-function App() {
-  const [page, setPage] = useState<Page>('DASHBOARD');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const App: React.FC = () => {
+    // State to manage the current view
+    const [page, setPage] = React.useState<Page>('DASHBOARD');
+    const [sidebarOpen, setSidebarOpen] = React.useState(false);
+    
+    // State for detail views
+    const [viewingCompetitionId, setViewingCompetitionId] = React.useState<string | null>(null);
+    const [liveMatchId, setLiveMatchId] = React.useState<string | null>(null);
+    const [customizingSiteId, setCustomizingSiteId] = React.useState<string | null>(null);
+    const [customizingPortal, setCustomizingPortal] = React.useState<boolean>(false);
+    const [managingArticlesId, setManagingArticlesId] = React.useState<string | null>(null);
+    const [editingArticle, setEditingArticle] = React.useState<{ competitionId: string; articleId: string | null } | null>(null);
+    const [managingMediaId, setManagingMediaId] = React.useState<string | null>(null);
+    const [editingGallery, setEditingGallery] = React.useState<{ competitionId: string; galleryId: string | null } | null>(null);
+    const [managingSponsorsId, setManagingSponsorsId] = React.useState<string | null>(null);
+    const [managingRegulationsId, setManagingRegulationsId] = React.useState<string | null>(null);
+    const [viewingPlayerId, setViewingPlayerId] = React.useState<string | null>(null);
 
-  // State for detail pages
-  const [selectedCompetitionId, setSelectedCompetitionId] = useState<string | null>(null);
-  const [selectedMatchId, setSelectedMatchId] = useState<string | null>(null);
-  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
-  const [selectedGalleryId, setSelectedGalleryId] = useState<string | null>(null);
+    // Check for public site query params
+    const queryParams = new URLSearchParams(window.location.search);
+    const publicCompetitionId = queryParams.get('publicCompetitionId');
+    const articleId = queryParams.get('articleId');
+    const galleryId = queryParams.get('galleryId');
+    const isPortal = queryParams.get('portal');
+    const view = queryParams.get('view');
 
-
-  // Handle public site rendering based on URL params
-  const urlParams = new URLSearchParams(window.location.search);
-  const publicCompetitionId = urlParams.get('publicCompetitionId');
-  const publicArticleId = urlParams.get('articleId');
-  const publicGalleryId = urlParams.get('galleryId');
-  const publicLiveView = urlParams.get('view') === 'live';
-  const isPortal = urlParams.get('portal') === 'true';
-
-  if (isPortal) {
-    return <PublicPortalSite />;
-  }
-  
-  if (publicCompetitionId) {
-    if (publicArticleId) {
-        return <PublicArticleDetail competitionId={publicCompetitionId} articleId={publicArticleId} />;
+    if (isPortal === 'true') {
+        return <PublicPortalSite />;
     }
-    if (publicGalleryId) {
-        return <PublicGalleryDetail competitionId={publicCompetitionId} galleryId={publicGalleryId} />;
+
+    if (publicCompetitionId) {
+        if (articleId) {
+            return <PublicArticleDetail competitionId={publicCompetitionId} articleId={articleId} />;
+        }
+        if (galleryId) {
+            return <PublicGalleryDetail competitionId={publicCompetitionId} galleryId={galleryId} />;
+        }
+        if (view === 'live') {
+            return <PublicAllLiveStreams competitionId={publicCompetitionId} />;
+        }
+        return <PublicSite competitionId={publicCompetitionId} />;
     }
-    if (publicLiveView) {
-        return <PublicAllLiveStreams competitionId={publicCompetitionId} />;
+
+    const resetViews = () => {
+        setViewingCompetitionId(null);
+        setLiveMatchId(null);
+        setCustomizingSiteId(null);
+        setCustomizingPortal(false);
+        setManagingArticlesId(null);
+        setEditingArticle(null);
+        setManagingMediaId(null);
+        setEditingGallery(null);
+        setManagingSponsorsId(null);
+        setManagingRegulationsId(null);
+        setViewingPlayerId(null);
     }
-    return <PublicSite competitionId={publicCompetitionId} />;
-  }
+    
+    const navigateTo = (p: Page) => {
+        resetViews();
+        setPage(p);
+    };
 
+    const handleViewCompetition = (id: string) => {
+        setViewingCompetitionId(id);
+    };
 
-  const handleSetPage = (newPage: Page) => {
-    setPage(newPage);
-    setSelectedCompetitionId(null);
-    setSelectedMatchId(null);
-    setSidebarOpen(false);
-  };
+    const handleManageLiveMatch = (id: string) => {
+        setLiveMatchId(id);
+    };
+    
+    const handleCustomizeSite = (id: string) => {
+        setCustomizingSiteId(id);
+    };
 
-  const viewCompetitionDetail = (id: string) => {
-    setSelectedCompetitionId(id);
-    setPage('COMPETITION_DETAIL');
-  };
-
-  const viewLiveMatch = (id: string) => {
-    setSelectedMatchId(id);
-    setPage('LIVE_MATCH');
-  };
-
-  const viewPlayerDetail = (id: string) => {
-    setSelectedPlayerId(id);
-    setPage('PLAYER_DETAIL');
-  };
-  
-  const handleBackToCompetitions = () => {
-    setSelectedCompetitionId(null);
-    setPage('MANAGE_COMPETITIONS');
-  };
-
-  const handleBackFromLiveMatch = () => {
-    setSelectedMatchId(null);
-    if(selectedCompetitionId) {
-        setPage('COMPETITION_DETAIL');
-    } else {
-        setPage('MANAGE_COMPETITIONS');
+    const handleCustomizePortal = () => {
+        setCustomizingPortal(true);
     }
-  };
+    
+    const handleManageArticles = (id: string) => {
+        setManagingArticlesId(id);
+    };
+    
+    const handleCreateArticle = (competitionId: string) => {
+        setEditingArticle({ competitionId, articleId: null });
+    };
 
-  const handleBackFromPlayerDetail = () => {
-    setSelectedPlayerId(null);
-    setPage('MANAGE_PLAYERS');
-  };
-  
-  // Publish flow handlers
-  const handleCustomizeSite = (competitionId: string) => {
-    setSelectedCompetitionId(competitionId);
-    setPage('WEB_BUILDER');
-  };
-  const handleManageArticles = (competitionId: string) => {
-    setSelectedCompetitionId(competitionId);
-    setPage('MANAGE_ARTICLES');
-  };
-  const handleCreateArticle = (competitionId: string) => {
-    setSelectedCompetitionId(competitionId);
-    setSelectedArticleId(null);
-    setPage('EDIT_ARTICLE');
-  };
-  const handleEditArticle = (articleId: string) => {
-    setSelectedArticleId(articleId);
-    setPage('EDIT_ARTICLE');
-  };
-   const handleManageMedia = (competitionId: string) => {
-    setSelectedCompetitionId(competitionId);
-    setPage('MANAGE_MEDIA');
-  };
-  const handleCreateGallery = (competitionId: string) => {
-    setSelectedCompetitionId(competitionId);
-    setSelectedGalleryId(null);
-    setPage('EDIT_GALLERY');
-  };
-  const handleEditGallery = (galleryId: string) => {
-    setSelectedGalleryId(galleryId);
-    setPage('EDIT_GALLERY');
-  };
-  const handleManageSponsors = (competitionId: string) => {
-    setSelectedCompetitionId(competitionId);
-    setPage('MANAGE_SPONSORS');
-  };
-  const handleManageRegulations = (competitionId: string) => {
-    setSelectedCompetitionId(competitionId);
-    setPage('MANAGE_REGULATIONS');
-  };
-  const handleBackToPublish = () => {
-    setSelectedCompetitionId(null);
-    setSelectedArticleId(null);
-    setPage('PUBLISH');
-  };
-  const handleBackToArticles = () => {
-    setSelectedArticleId(null);
-    setPage('MANAGE_ARTICLES');
-  };
-   const handleBackToMedia = () => {
-    setSelectedGalleryId(null);
-    setPage('MANAGE_MEDIA');
-  };
-  const handleCustomizePortal = () => {
-    setPage('PORTAL_BUILDER');
-  };
+    const handleEditArticle = (articleId: string) => {
+        const compId = 'comp-1'; // This is a simplification. In a real app, you'd get this from the article object.
+        setEditingArticle({ competitionId: compId, articleId });
+    };
+    
+    const handleManageMedia = (id: string) => {
+        setManagingMediaId(id);
+    };
+    
+    const handleCreateGallery = (competitionId: string) => {
+        setEditingGallery({ competitionId, galleryId: null });
+    };
 
+    const handleEditGallery = (galleryId: string) => {
+        const compId = 'comp-1'; // Simplification
+        setEditingGallery({ competitionId: compId, galleryId });
+    };
+    
+    const handleManageSponsors = (id: string) => {
+        setManagingSponsorsId(id);
+    };
 
-  const renderPage = () => {
-    switch (page) {
-      case 'DASHBOARD': return <Dashboard setPage={handleSetPage} />;
-      case 'BROWSE': return <Browse />;
-      case 'MANAGE_COMPETITIONS': return <ManageCompetitions setPage={handleSetPage} onViewCompetition={viewCompetitionDetail} />;
-      case 'COMPETITION_DETAIL': return selectedCompetitionId ? <CompetitionDetail competitionId={selectedCompetitionId} onBack={handleBackToCompetitions} onManageLiveMatch={viewLiveMatch} /> : <p>No competition selected.</p>;
-      case 'LIVE_MATCH': return selectedMatchId ? <LiveMatch matchId={selectedMatchId} onBack={handleBackFromLiveMatch} /> : <p>No match selected.</p>;
-      case 'MANAGE_TEAMS': return <ManageTeams />;
-      case 'MANAGE_PLAYERS': return <ManagePlayers onViewPlayerDetail={viewPlayerDetail} />;
-      case 'PLAYER_DETAIL': return selectedPlayerId ? <PlayerDetail playerId={selectedPlayerId} onBack={handleBackFromPlayerDetail} /> : <p>No player selected.</p>;
-      case 'MANAGE_ARENAS': return <ManageArenas />;
-      case 'MANAGE_REFEREES': return <ManageReferees />;
-      case 'MANAGE_OBSERVERS': return <ManageObservers />;
-      case 'MANAGE_ORGANIZERS': return <ManageOrganizers />;
-      case 'MANAGE_NATIONAL_TEAM': return <ManageNationalTeam />;
-      case 'PUBLISH': return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
-      case 'WEB_BUILDER': return selectedCompetitionId ? <WebBuilder competitionId={selectedCompetitionId} onBack={handleBackToPublish} /> : <p>No competition selected.</p>;
-      case 'PORTAL_BUILDER': return <PortalBuilder onBack={handleBackToPublish} />;
-      case 'MANAGE_ARTICLES': return selectedCompetitionId ? <ManageArticles competitionId={selectedCompetitionId} onBack={handleBackToPublish} onCreateArticle={handleCreateArticle} onEditArticle={handleEditArticle}/> : <p>No competition selected.</p>;
-      case 'EDIT_ARTICLE': return selectedCompetitionId ? <EditArticle competitionId={selectedCompetitionId} articleId={selectedArticleId} onBack={handleBackToArticles} /> : <p>No competition selected.</p>;
-      case 'MANAGE_MEDIA': return selectedCompetitionId ? <ManageMedia competitionId={selectedCompetitionId} onBack={handleBackToPublish} onCreateGallery={handleCreateGallery} onEditGallery={handleEditGallery} /> : <p>No competition selected.</p>;
-      case 'EDIT_GALLERY': return selectedCompetitionId ? <EditGallery competitionId={selectedCompetitionId} galleryId={selectedGalleryId} onBack={handleBackToMedia} /> : <p>No competition selected.</p>;
-      case 'MANAGE_SPONSORS': return selectedCompetitionId ? <ManageSponsors competitionId={selectedCompetitionId} onBack={handleBackToPublish} /> : <p>No competition selected.</p>;
-      case 'MANAGE_REGULATIONS': return selectedCompetitionId ? <ManageRegulations competitionId={selectedCompetitionId} onBack={handleBackToPublish} /> : <p>No competition selected.</p>;
-      case 'REPORTS': return <Reports />;
-      case 'MARKETPLACE': return <Marketplace />;
-      case 'SETTINGS': return <Settings setPage={handleSetPage} />;
-      default: return <Dashboard setPage={handleSetPage} />;
-    }
-  };
+    const handleManageRegulations = (id: string) => {
+        setManagingRegulationsId(id);
+    };
+    
+    const handleViewPlayerDetail = (id: string) => {
+        setViewingPlayerId(id);
+    };
 
-  return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar page={page} setPage={handleSetPage} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
-          {renderPage()}
-        </main>
-      </div>
-    </div>
-  );
-}
+    const renderContent = () => {
+        if (viewingCompetitionId) return <CompetitionDetail competitionId={viewingCompetitionId} onBack={resetViews} onManageLiveMatch={handleManageLiveMatch} />;
+        if (liveMatchId) return <LiveMatch matchId={liveMatchId} onBack={resetViews} />;
+        if (customizingSiteId) return <WebBuilder competitionId={customizingSiteId} onBack={resetViews} />;
+        if (customizingPortal) return <PortalBuilder onBack={resetViews} />;
+        if (managingArticlesId) return <ManageArticles competitionId={managingArticlesId} onBack={resetViews} onCreateArticle={handleCreateArticle} onEditArticle={handleEditArticle}/>;
+        if (editingArticle) return <EditArticle competitionId={editingArticle.competitionId} articleId={editingArticle.articleId} onBack={resetViews} />;
+        if (managingMediaId) return <ManageMedia competitionId={managingMediaId} onBack={resetViews} onCreateGallery={handleCreateGallery} onEditGallery={handleEditGallery} />;
+        if (editingGallery) return <EditGallery competitionId={editingGallery.competitionId} galleryId={editingGallery.galleryId} onBack={resetViews} />;
+        if (managingSponsorsId) return <ManageSponsors competitionId={managingSponsorsId} onBack={resetViews} />;
+        if (managingRegulationsId) return <ManageRegulations competitionId={managingRegulationsId} onBack={resetViews} />;
+        if (viewingPlayerId) return <PlayerDetail playerId={viewingPlayerId} onBack={resetViews} />;
+
+        switch (page) {
+            case 'DASHBOARD': return <Dashboard setPage={navigateTo} />;
+            case 'BROWSE': return <Browse />;
+            case 'MANAGE_COMPETITIONS': return <ManageCompetitions setPage={navigateTo} onViewCompetition={handleViewCompetition} />;
+            case 'MANAGE_TEAMS': return <ManageTeams />;
+            case 'MANAGE_PLAYERS': return <ManagePlayers onViewPlayerDetail={handleViewPlayerDetail} />;
+            case 'MANAGE_ARENAS': return <ManageArenas />;
+            case 'MANAGE_REFEREES': return <ManageReferees />;
+            case 'MANAGE_OBSERVERS': return <ManageObservers />;
+            case 'MANAGE_ORGANIZERS': return <ManageOrganizers />;
+            case 'MANAGE_NATIONAL_TEAM': return <ManageNationalTeam />;
+            case 'PUBLISH': return <Publish onCustomizeSite={handleCustomizeSite} onManageArticles={handleManageArticles} onManageMedia={handleManageMedia} onManageSponsors={handleManageSponsors} onManageRegulations={handleManageRegulations} onCustomizePortal={handleCustomizePortal} />;
+            case 'REPORTS': return <Reports />;
+            case 'MARKETPLACE': return <Marketplace />;
+            case 'SETTINGS': return <Settings setPage={navigateTo} />;
+            default: return <Dashboard setPage={navigateTo} />;
+        }
+    };
+
+    return (
+        <div className="flex h-screen bg-gray-100">
+            <Sidebar page={page} setPage={navigateTo} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+                <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+                    {renderContent()}
+                </main>
+            </div>
+        </div>
+    );
+};
 
 export default App;
