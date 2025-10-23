@@ -22,7 +22,7 @@ interface ManageCompetitionsProps {
 }
 
 const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewCompetition}) => {
-  const { competitions, addCompetition, updateCompetition, deleteCompetition, users } = useCompetitions();
+  const { competitions, addCompetition, updateCompetition, deleteCompetition, users, sports } = useCompetitions();
   const { hasPermission } = usePermissions();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCompetition, setEditingCompetition] = useState<Competition | null>(null);
@@ -42,17 +42,7 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
     setEditingCompetition(null);
   };
 
-  const handleSave = (data: { 
-    name: string; 
-    season: string; 
-    logoFile?: File | null;
-    format: 'league' | 'cup' | 'mixed';
-    twoLegged?: boolean;
-    fullBracket?: boolean;
-    teamsPerGroup?: number;
-    county?: string;
-    organizerId?: string;
-  }) => {
+  const handleSave = (data: Omit<Competition, 'id' | 'logoUrl' | 'status' | 'teamIds'> & { logoFile?: File | null }) => {
     if (editingCompetition) {
       updateCompetition({ ...editingCompetition, ...data });
     } else {
@@ -68,6 +58,7 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
   };
 
   const getOrganizerName = (id?: string) => users.find(u => u.id === id)?.name || 'N/A';
+  const getSportName = (id?: string) => sports.find(s => s.id === id)?.name || 'N/A';
 
 
   return (
@@ -91,6 +82,7 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sport</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Season</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">County</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizer</th>
@@ -112,6 +104,7 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
                        </button>
                     </div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getSportName(comp.sportId)}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.season}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{comp.county || 'N/A'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getOrganizerName(comp.organizerId)}</td>

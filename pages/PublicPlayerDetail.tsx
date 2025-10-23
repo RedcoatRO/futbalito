@@ -8,12 +8,11 @@ interface PublicPlayerDetailProps {
 }
 
 const PublicPlayerDetail: React.FC<PublicPlayerDetailProps> = ({ playerId }) => {
-    const { portalConfig, players, teams, getTransfersByPlayerId, getPlayerRegistrationsByPlayerId } = useCompetitions();
+    const { portalConfig, players, teams, getTransfersByPlayerId } = useCompetitions();
 
     const player = players.find(p => p.id === playerId);
     const team = teams.find(t => t.id === player?.teamId);
     const transfers = getTransfersByPlayerId(playerId);
-    const registrations = getPlayerRegistrationsByPlayerId(playerId);
 
     const mainNavItems = [
         { name: 'Home', href: '/?portal=true' },
@@ -40,10 +39,8 @@ const PublicPlayerDetail: React.FC<PublicPlayerDetailProps> = ({ playerId }) => 
                 navItems={mainNavItems}
             />
             <main className="container mx-auto py-12 px-6">
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="flex-shrink-0 h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center text-3xl font-bold text-gray-500">
-                        {player.name.charAt(0)}
-                    </div>
+                <div className="flex items-center gap-6 mb-8">
+                     <img src={player.photoUrl || `https://avatar.iran.liara.run/username?username=${player.name.replace(/\s/g, '+')}`} alt={player.name} className="h-24 w-24 rounded-full object-cover shadow-md" />
                     <div>
                         <h1 className="text-4xl font-extrabold text-gray-800">{player.name}</h1>
                         {team && (
@@ -57,38 +54,46 @@ const PublicPlayerDetail: React.FC<PublicPlayerDetailProps> = ({ playerId }) => 
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-lg">
-                        <h2 className="text-2xl font-bold mb-4">Season Stats</h2>
-                        <div className="space-y-3">
-                            <div className="flex justify-between p-3 bg-gray-50 rounded-md"><span>Goals</span><span className="font-bold">{player.stats.goals}</span></div>
-                            <div className="flex justify-between p-3"><span>Assists</span><span className="font-bold">{player.stats.assists}</span></div>
-                            <div className="flex justify-between p-3 bg-gray-50 rounded-md"><span>Yellow Cards</span><span className="font-bold">{player.stats.yellowCards}</span></div>
-                            <div className="flex justify-between p-3"><span>Red Cards</span><span className="font-bold">{player.stats.redCards}</span></div>
-                        </div>
+                        <h2 className="text-2xl font-bold mb-4">Player Info</h2>
+                        <ul className="space-y-3 text-gray-700">
+                             {player.dateOfBirth && <li className="flex justify-between"><span>Date of Birth:</span> <span className="font-semibold">{new Date(player.dateOfBirth).toLocaleDateString()}</span></li>}
+                             {player.registrationNumber && <li className="flex justify-between"><span>Registration #:</span> <span className="font-semibold font-mono">{player.registrationNumber}</span></li>}
+                             {player.status && <li className="flex justify-between items-center"><span>Status:</span> <span className={`px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full ${player.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>{player.status === 'active' ? 'Active' : 'Inactive'}</span></li>}
+                        </ul>
                     </div>
                     <div className="lg:col-span-2 space-y-8">
-                        <div className="bg-white p-6 rounded-lg shadow-lg">
-                            <h2 className="text-2xl font-bold mb-4">Registration History</h2>
-                            <ul className="divide-y divide-gray-200">
-                                {registrations.map(reg => (
-                                    <li key={reg.id} className="py-2 grid grid-cols-3 gap-4">
-                                        <span className="font-mono text-sm">{reg.registrationNumber}</span>
-                                        <span className="text-sm text-gray-600">Until: {new Date(reg.validUntil).toLocaleDateString()}</span>
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full w-fit ${reg.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{reg.status}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                         <div className="bg-white p-6 rounded-lg shadow-lg">
+                            <h2 className="text-2xl font-bold mb-4">Season Stats</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-gray-50 rounded-md text-center">
+                                    <div className="text-3xl font-bold">{player.stats.goals}</div>
+                                    <div className="text-sm text-gray-500">Goals</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-md text-center">
+                                    <div className="text-3xl font-bold">{player.stats.assists}</div>
+                                    <div className="text-sm text-gray-500">Assists</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-md text-center">
+                                    <div className="text-3xl font-bold">{player.stats.yellowCards}</div>
+                                    <div className="text-sm text-gray-500">Yellow Cards</div>
+                                </div>
+                                <div className="p-4 bg-gray-50 rounded-md text-center">
+                                    <div className="text-3xl font-bold">{player.stats.redCards}</div>
+                                    <div className="text-sm text-gray-500">Red Cards</div>
+                                </div>
+                            </div>
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-lg">
                             <h2 className="text-2xl font-bold mb-4">Transfer History</h2>
                             <ul className="divide-y divide-gray-200">
-                                {transfers.map(t => (
+                                {transfers.length > 0 ? transfers.map(t => (
                                     <li key={t.id} className="py-3">
                                         <div className="flex items-center justify-between">
                                             <span className="font-semibold">{getTeamName(t.fromTeamId)} &rarr; {getTeamName(t.toTeamId)}</span>
                                             <span className="text-sm text-gray-500">{new Date(t.date).toLocaleDateString()}</span>
                                         </div>
                                     </li>
-                                ))}
+                                )) : <p className="text-gray-500 text-center py-4">No transfer history available.</p>}
                             </ul>
                         </div>
                     </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Referee } from '../types.ts';
 import Button from '../components/ui/Button.tsx';
@@ -31,9 +30,11 @@ const ManageReferees: React.FC = () => {
     setEditingReferee(null);
   };
 
-  const handleSave = (data: { name: string; }) => {
+  const handleSave = (data: Omit<Referee, 'id' | 'photoUrl'> & { photoFile?: File | null }) => {
+    const { photoFile, ...refereeData } = data;
     if (editingReferee) {
-      updateReferee({ ...editingReferee, ...data });
+      const updatedRefereeObject = { ...editingReferee, ...refereeData };
+      updateReferee(updatedRefereeObject, photoFile);
     } else {
       addReferee(data);
     }
@@ -59,11 +60,25 @@ const ManageReferees: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50"><tr><th className="px-6 py-3 text-left text-xs font-medium uppercase">Name</th>{canManage && <th className="px-6 py-3 text-right text-xs font-medium uppercase">Actions</th>}</tr></thead>
+            <thead className="bg-gray-50">
+                <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">County</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                    {canManage && <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>}
+                </tr>
+            </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {referees.map((referee) => (
                 <tr key={referee.id}>
-                  <td className="px-6 py-4 font-medium">{referee.name}</td>
+                    <td className="px-6 py-4 font-medium">
+                        <div className="flex items-center">
+                            <img src={referee.photoUrl || `https://avatar.iran.liara.run/username?username=${referee.name.replace(/\s/g, '+')}`} alt={referee.name} className="h-10 w-10 rounded-full object-cover mr-4" />
+                            {referee.name}
+                        </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{referee.county || 'N/A'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{referee.category || 'N/A'}</td>
                   {canManage && (
                     <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
                         <button onClick={() => openEditModal(referee)} className="text-indigo-600 hover:text-indigo-900">Edit</button>

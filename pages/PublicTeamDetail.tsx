@@ -78,7 +78,25 @@ const PublicTeamDetail: React.FC<PublicTeamDetailProps> = ({ teamId }) => {
 
                 <div className="mt-8">
                     {activeTab === 'Summary' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div className="bg-white p-6 rounded-lg shadow-lg">
+                                <h2 className="text-2xl font-bold mb-4">Club Details</h2>
+                                <ul className="space-y-3 text-gray-700">
+                                    {team.foundedYear && <li className="flex justify-between"><span>Founded:</span> <span className="font-semibold">{team.foundedYear}</span></li>}
+                                    {team.address && <li className="flex justify-between"><span>Address:</span> <span className="font-semibold text-right">{team.address}</span></li>}
+                                    {team.president && <li className="flex justify-between"><span>President:</span> <span className="font-semibold">{team.president}</span></li>}
+                                    {team.coach && <li className="flex justify-between"><span>Coach:</span> <span className="font-semibold">{team.coach}</span></li>}
+                                    {team.clubColors && (
+                                        <li className="flex justify-between items-center">
+                                            <span>Colors:</span>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-5 h-5 rounded-full border" style={{ backgroundColor: team.clubColors.primary }}></div>
+                                                <div className="w-5 h-5 rounded-full border" style={{ backgroundColor: team.clubColors.secondary }}></div>
+                                            </div>
+                                        </li>
+                                    )}
+                                </ul>
+                            </div>
                             {standings && primaryCompetition && (
                                 <div className="bg-white p-6 rounded-lg shadow-lg">
                                     <h2 className="text-2xl font-bold mb-4">{primaryCompetition.name} Standings</h2>

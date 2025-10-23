@@ -14,7 +14,7 @@ export const MagnifyingGlassIcon: React.FC<IconProps> = ({ className }) => (
 );
 
 export const ChevronDownIcon: React.FC<IconProps> = ({ className }) => (
-    <svg xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
 );
 
 export const UserIcon: React.FC<IconProps> = ({ className }) => (
@@ -139,4 +139,12 @@ export const BuildingLibraryIcon: React.FC<IconProps> = ({ className }) => (
 
 export const AcademicCapIcon: React.FC<IconProps> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}><path d="M11.25 4.5l7.5 7.5-7.5 7.5-7.5-7.5 7.5-7.5z" /><path d="M11.25 4.5l7.5 7.5-7.5 7.5-7.5-7.5 7.5-7.5zM12 18.75h.008v.008H12v-.008z" /><path d="M19.5 21a1.5 1.5 0 01-1.5-1.5v-3.75a1.5 1.5 0 011.5-1.5h.75a1.5 1.5 0 011.5 1.5v3.75a1.5 1.5 0 01-1.5 1.5h-.75z" /><path d="M5.25 21a1.5 1.5 0 01-1.5-1.5v-3.75a1.5 1.5 0 011.5-1.5h.75a1.5 1.5 0 011.5 1.5v3.75a1.5 1.5 0 01-1.5 1.5h-.75z" /><path d="M12 21a1.5 1.5 0 01-1.5-1.5v-3.75a1.5 1.5 0 011.5-1.5h.75a1.5 1.5 0 011.5 1.5v3.75a1.5 1.5 0 01-1.5 1.5h-.75z" /><path d="M4.5 12.75l7.5-7.5 7.5 7.5" /></svg>
+);
+
+export const TrophyIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-6.75c-.622 0-1.125.504-1.125 1.125V18.75m9 0h-9" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 21.75h4.5m-4.5-3.375v-3.375M14.25 18.375v-3.375M12 15.75v-3.375M12 6.75A2.25 2.25 0 0114.25 9v1.5a2.25 2.25 0 01-4.5 0V9A2.25 2.25 0 0112 6.75z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 9.75h6" />
+    </svg>
 );

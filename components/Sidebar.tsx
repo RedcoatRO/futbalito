@@ -8,7 +8,8 @@ import {
   ChartPieIcon, EyeIcon, WrenchScrewdriverIcon, UsersIcon,
   UserGroupIcon, FlagIcon, MapIcon, LifebuoyIcon, UserCircleIcon,
   ShieldCheckIcon, NewspaperIcon, BanknotesIcon, Cog6ToothIcon,
-  ArrowRightStartOnRectangleIcon, XMarkIcon, BuildingLibraryIcon, AcademicCapIcon
+  ArrowRightStartOnRectangleIcon, XMarkIcon, BuildingLibraryIcon, AcademicCapIcon,
+  TrophyIcon
 } from './icons/Icons.tsx';
 
 interface SidebarProps {
@@ -67,6 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({ page, setPage, sidebarOpen, setSideba
     ],
     manage: [
       { page: 'MANAGE_COMPETITIONS', label: 'Competitions', icon: <ShieldCheckIcon className="h-6 w-6" />, permission: hasPermission('competitions:edit') },
+      { page: 'MANAGE_SPORTS', label: 'Sports', icon: <TrophyIcon className="h-6 w-6" />, permission: hasPermission('sports:manage') },
       { page: 'MANAGE_TEAMS', label: 'Teams', icon: <UsersIcon className="h-6 w-6" />, permission: hasPermission('teams:edit') },
       { page: 'MANAGE_PLAYERS', label: 'Players', icon: <UserGroupIcon className="h-6 w-6" />, permission: hasPermission('players:manage') },
       { page: 'MANAGE_ARENAS', label: 'Arenas', icon: <MapIcon className="h-6 w-6" />, permission: hasPermission('arenas:manage') },

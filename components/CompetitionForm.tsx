@@ -23,7 +23,7 @@ const romanianCounties = [
 ];
 
 const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, onClose }) => {
-  const { arenas, users } = useCompetitions();
+  const { arenas, users, sports } = useCompetitions();
   const [name, setName] = useState('');
   const [season, setSeason] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -36,6 +36,10 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
   const [isPublic, setIsPublic] = useState(false);
   const [county, setCounty] = useState<string | undefined>(undefined);
   const [organizerId, setOrganizerId] = useState<string | undefined>(undefined);
+  const [sportId, setSportId] = useState<string | undefined>(undefined);
+  const [pointsForWin, setPointsForWin] = useState<number>(3);
+  const [pointsForTieBreakWin, setPointsForTieBreakWin] = useState<number>(2);
+
 
   useEffect(() => {
     if (competition) {
@@ -49,8 +53,11 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
       setIsPublic(competition.isPublic ?? false);
       setCounty(competition.county);
       setOrganizerId(competition.organizerId);
+      setSportId(competition.sportId);
+      setPointsForWin(competition.pointsForWin ?? 3);
+      setPointsForTieBreakWin(competition.pointsForTieBreakWin ?? 2);
     } else {
-      setName(''); setSeason(''); setPreviewUrl(null); setFormat('league'); setTwoLegged(false); setTeamsPerGroup(4); setDefaultArenaId(undefined); setIsPublic(false); setCounty(undefined); setOrganizerId(undefined);
+      setName(''); setSeason(''); setPreviewUrl(null); setFormat('league'); setTwoLegged(false); setTeamsPerGroup(4); setDefaultArenaId(undefined); setIsPublic(false); setCounty(undefined); setOrganizerId(undefined); setSportId(undefined); setPointsForWin(3); setPointsForTieBreakWin(2);
     }
     setLogoFile(null); setError('');
   }, [competition]);
@@ -69,7 +76,7 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
       setError('Name and season are required.');
       return;
     }
-    onSave({ name, season, logoFile, format, twoLegged, teamsPerGroup, defaultArenaId, isPublic, county, organizerId });
+    onSave({ name, season, logoFile, format, twoLegged, teamsPerGroup, defaultArenaId, isPublic, county, organizerId, sportId, pointsForWin, pointsForTieBreakWin });
   };
 
   return (
@@ -101,6 +108,14 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
               </select>
             </div>
         </div>
+
+         <div>
+          <label htmlFor="sport" className="block text-sm font-medium text-gray-700">Sport</label>
+          <select id="sport" value={sportId || ''} onChange={e => setSportId(e.target.value || undefined)} className="mt-1 block w-full border rounded-md p-2">
+              <option value="">Select a sport</option>
+              {sports.map(sport => <option key={sport.id} value={sport.id}>{sport.name}</option>)}
+          </select>
+        </div>
         
         <div>
           <label htmlFor="defaultArena" className="block text-sm font-medium text-gray-700">Default Arena</label>
@@ -110,6 +125,16 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
           </select>
         </div>
         <hr/>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="pointsForWin" className="block text-sm font-medium">Puncte victorie</label>
+            <input type="number" id="pointsForWin" value={pointsForWin} onChange={(e) => setPointsForWin(Number(e.target.value))} className="mt-1 block w-full border rounded-md p-2" />
+          </div>
+          <div>
+            <label htmlFor="pointsForTieBreakWin" className="block text-sm font-medium">Puncte departajare</label>
+            <input type="number" id="pointsForTieBreakWin" value={pointsForTieBreakWin} onChange={(e) => setPointsForTieBreakWin(Number(e.target.value))} className="mt-1 block w-full border rounded-md p-2" />
+          </div>
+        </div>
         <div><label className="block text-sm font-medium">Format</label><select value={format} onChange={(e) => setFormat(e.target.value as any)} className="mt-1 block w-full border rounded-md p-2"><option value="league">League</option><option value="cup">Cup</option><option value="mixed">Mixed</option></select></div>
         {format === 'league' && <div className="flex items-center"><input id="twoLegged" type="checkbox" checked={twoLegged} onChange={(e) => setTwoLegged(e.target.checked)} className="h-4 w-4 rounded" /><label htmlFor="twoLegged" className="ml-2">Two-legged matches</label></div>}
         {format === 'mixed' && (<div className="space-y-4 p-4 bg-gray-50 rounded-md"><div><label htmlFor="teamsPerGroup" className="block text-sm font-medium">Teams per group</label><input type="number" id="teamsPerGroup" value={teamsPerGroup} onChange={(e) => setTeamsPerGroup(parseInt(e.target.value, 10) || 0)} className="mt-1 w-full border rounded-md p-2" min="2"/></div><div className="flex items-center"><input id="twoLeggedGroups" type="checkbox" checked={twoLegged} onChange={(e) => setTwoLegged(e.target.checked)} className="h-4 w-4 rounded" /><label htmlFor="twoLeggedGroups" className="ml-2">Two-legged matches in groups</label></div></div>)}

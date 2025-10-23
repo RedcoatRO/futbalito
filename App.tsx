@@ -13,6 +13,7 @@ import ManageReferees from './pages/ManageReferees.tsx';
 import ManageObservers from './pages/ManageObservers.tsx';
 import ManageOrganizers from './pages/ManageOrganizers.tsx';
 import ManageNationalTeam from './pages/ManageNationalTeam.tsx';
+import ManageSports from './pages/ManageSports.tsx';
 import Publish from './pages/Publish.tsx';
 import Reports from './pages/Reports.tsx';
 import Marketplace from './pages/Marketplace.tsx';
@@ -209,6 +210,7 @@ const App: React.FC = () => {
             case 'MANAGE_TEAMS': return <ManageTeams />;
             case 'MANAGE_PLAYERS': return <ManagePlayers onViewPlayerDetail={handleViewPlayerDetail} />;
             case 'MANAGE_ARENAS': return <ManageArenas />;
+            case 'MANAGE_SPORTS': return <ManageSports />;
             case 'MANAGE_REFEREES': return <ManageReferees />;
             case 'MANAGE_OBSERVERS': return <ManageObservers />;
             case 'MANAGE_ORGANIZERS': return <ManageOrganizers />;

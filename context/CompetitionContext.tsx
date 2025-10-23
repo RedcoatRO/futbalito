@@ -1,14 +1,14 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { 
     Team, Competition, Match, Player, OrganizationSettings, User, Role,
-    Invoice, AuditLog, County, Arena, Sanction, Referee, Observer,
+    Invoice, AuditLog, County, Arena, Sanction, Referee, Observer, Sport,
     Article, MediaImage, Gallery, Sponsor, Transfer, PlayerRegistration,
     Standing, PortalConfig, PublicConfig, NationalTeam, NationalSquadPlayer, Comment
 } from '../types.ts';
 import { 
     mockTeams, mockCompetitions, mockMatches, mockPlayers, mockOrganizationSettings,
     mockUsers, mockRoles, mockInvoices, mockAuditLog, mockCounties, mockArenas,
-    mockSanctions, mockReferees, mockObservers, mockArticles, mockMediaImages,
+    mockSanctions, mockReferees, mockObservers, mockSports, mockArticles, mockMediaImages,
     mockGalleries, mockSponsors, mockTransfers, mockPlayerRegistrations, mockPortalConfig,
     MOCK_NATIONAL_TEAM, MOCK_NATIONAL_SQUAD, MOCK_INTERNATIONAL_MATCHES
 } from './mock_data.ts';
@@ -17,12 +17,12 @@ import { generateBergerTable } from '../utils/bergerTable.ts';
 // Define the shape of the context value
 interface CompetitionContextType {
     teams: Team[];
-    addTeam: (data: { name: string; country: string; logoFile?: File | null }) => void;
-    updateTeam: (team: Team) => void;
+    addTeam: (data: Omit<Team, 'id' | 'logoUrl'> & { logoFile?: File | null }) => void;
+    updateTeam: (team: Team, logoFile?: File | null) => void;
     deleteTeam: (id: string) => void;
     competitions: Competition[];
     getCompetitionById: (id: string) => Competition | undefined;
-    addCompetition: (data: any) => void;
+    addCompetition: (data: Omit<Competition, 'id' | 'logoUrl' | 'status' | 'teamIds'> & { logoFile?: File | null }) => void;
     updateCompetition: (competition: Competition) => void;
     deleteCompetition: (id: string) => void;
     addTeamToCompetition: (competitionId: string, teamId: string) => void;
@@ -31,8 +31,8 @@ interface CompetitionContextType {
     updateMatch: (match: Match) => void;
     generateBergerSchedule: (competitionId: string) => void;
     players: Player[];
-    addPlayer: (data: { name: string; teamId: string }) => void;
-    updatePlayer: (player: Player) => void;
+    addPlayer: (data: Omit<Player, 'id' | 'stats' | 'photoUrl'> & { photoFile?: File | null }) => void;
+    updatePlayer: (player: Player, photoFile?: File | null) => void;
     deletePlayer: (id: string) => void;
     getTransfersByPlayerId: (playerId: string) => Transfer[];
     getPlayerRegistrationsByPlayerId: (playerId: string) => PlayerRegistration[];
@@ -55,20 +55,24 @@ interface CompetitionContextType {
     updateCounty: (county: County) => void;
     deleteCounty: (id: string) => void;
     arenas: Arena[];
-    addArena: (data: { name: string; location: string; fields: string[] }) => void;
+    addArena: (data: Omit<Arena, 'id'>) => void;
     updateArena: (arena: Arena) => void;
     deleteArena: (id: string) => void;
+    sports: Sport[];
+    addSport: (data: { name: string; description: string }) => void;
+    updateSport: (sport: Sport) => void;
+    deleteSport: (id: string) => void;
     sanctions: Sanction[];
     addSanction: (data: Omit<Sanction, 'id'>) => void;
     updateSanction: (sanction: Sanction) => void;
     deleteSanction: (id: string) => void;
     referees: Referee[];
-    addReferee: (data: { name: string }) => void;
-    updateReferee: (referee: Referee) => void;
+    addReferee: (data: Omit<Referee, 'id' | 'photoUrl'> & { photoFile?: File | null }) => void;
+    updateReferee: (referee: Referee, photoFile?: File | null) => void;
     deleteReferee: (id: string) => void;
     observers: Observer[];
-    addObserver: (data: { name: string }) => void;
-    updateObserver: (observer: Observer) => void;
+    addObserver: (data: Omit<Observer, 'id' | 'photoUrl'> & { photoFile?: File | null }) => void;
+    updateObserver: (observer: Observer, photoFile?: File | null) => void;
     deleteObserver: (id: string) => void;
     calculateStandings: (competitionId: string, stage: string) => Standing[];
     articles: Article[];
@@ -126,6 +130,7 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     const [auditLog, setAuditLog] = useState<AuditLog[]>(mockAuditLog);
     const [counties, setCounties] = useState<County[]>(mockCounties);
     const [arenas, setArenas] = useState<Arena[]>(mockArenas);
+    const [sports, setSports] = useState<Sport[]>(mockSports);
     const [sanctions, setSanctions] = useState<Sanction[]>(mockSanctions);
     const [referees, setReferees] = useState<Referee[]>(mockReferees);
     const [observers, setObservers] = useState<Observer[]>(mockObservers);
@@ -165,20 +170,24 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
     
     // Simple CRUD operations
-    const addTeam = (data: { name: string; country: string; logoFile?: File | null }) => {
+    const addTeam = (data: Omit<Team, 'id' | 'logoUrl'> & { logoFile?: File | null }) => {
+        const { logoFile, ...rest } = data;
         const newTeam: Team = {
             id: `team-${Date.now()}`,
-            name: data.name,
-            country: data.country,
-            logoUrl: data.logoFile ? URL.createObjectURL(data.logoFile) : `https://picsum.photos/seed/${Date.now()}/200`
+            logoUrl: logoFile ? URL.createObjectURL(logoFile) : `https://picsum.photos/seed/${Date.now()}/200`,
+            ...rest
         };
         setTeams(prev => [...prev, newTeam]);
         logAction('Create Team', `Created team: ${data.name}`);
     };
 
-    const updateTeam = (updatedTeam: Team) => {
-        setTeams(prev => prev.map(t => t.id === updatedTeam.id ? updatedTeam : t));
-        logAction('Update Team', `Updated team: ${updatedTeam.name}`);
+    const updateTeam = (updatedTeam: Team, logoFile?: File | null) => {
+        let finalTeam = { ...updatedTeam };
+        if (logoFile) {
+            finalTeam.logoUrl = URL.createObjectURL(logoFile);
+        }
+        setTeams(prev => prev.map(t => t.id === finalTeam.id ? finalTeam : t));
+        logAction('Update Team', `Updated team: ${finalTeam.name}`);
     };
 
     const deleteTeam = (id: string) => {
@@ -187,15 +196,14 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
         logAction('Delete Team', `Deleted team: ${teamName} (ID: ${id})`);
     };
 
-    const addCompetition = (data: any) => {
+    const addCompetition = (data: Omit<Competition, 'id' | 'logoUrl' | 'status' | 'teamIds'> & { logoFile?: File | null }) => {
+        const { logoFile, ...rest } = data;
         const newComp: Competition = {
             id: `comp-${Date.now()}`,
-            name: data.name,
-            season: data.season,
-            logoUrl: data.logoFile ? URL.createObjectURL(data.logoFile) : `https://picsum.photos/seed/${data.name}/200`,
+            logoUrl: logoFile ? URL.createObjectURL(logoFile) : `https://picsum.photos/seed/${data.name}/200`,
             status: 'Upcoming',
             teamIds: [],
-            ...data
+            ...rest
         };
         setCompetitions(prev => [...prev, newComp]);
         logAction('Create Competition', `Created competition: ${data.name}`);
@@ -212,20 +220,25 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
         logAction('Delete Competition', `Deleted competition: ${compName} (ID: ${id})`);
     };
 
-    const addPlayer = (data: { name: string; teamId: string; }) => {
+    const addPlayer = (data: Omit<Player, 'id' | 'stats' | 'photoUrl'> & { photoFile?: File | null }) => {
+        const { photoFile, ...playerData } = data;
         const newPlayer: Player = {
             id: `player-${Date.now()}`,
-            name: data.name,
-            teamId: data.teamId,
-            stats: { goals: 0, assists: 0, yellowCards: 0, redCards: 0 }
+            stats: { goals: 0, assists: 0, yellowCards: 0, redCards: 0 },
+            photoUrl: photoFile ? URL.createObjectURL(photoFile) : `https://avatar.iran.liara.run/username?username=${playerData.name.replace(/\s/g, '+')}`,
+            ...playerData
         };
         setPlayers(prev => [...prev, newPlayer]);
         logAction('Add Player', `Added player: ${data.name}`);
     };
 
-    const updatePlayer = (updatedPlayer: Player) => {
-        setPlayers(prev => prev.map(p => p.id === updatedPlayer.id ? updatedPlayer : p));
-        logAction('Update Player', `Updated player: ${updatedPlayer.name}`);
+    const updatePlayer = (updatedPlayer: Player, photoFile?: File | null) => {
+        let finalPlayer = { ...updatedPlayer };
+        if (photoFile) {
+            finalPlayer.photoUrl = URL.createObjectURL(photoFile);
+        }
+        setPlayers(prev => prev.map(p => p.id === finalPlayer.id ? finalPlayer : p));
+        logAction('Update Player', `Updated player: ${finalPlayer.name}`);
     };
 
     const deletePlayer = (id: string) => {
@@ -312,7 +325,7 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
         setCounties(prev => prev.filter(c => c.id !== id));
     };
     
-    const addArena = (data: { name: string; location: string; fields: string[] }) => {
+    const addArena = (data: Omit<Arena, 'id'>) => {
         setArenas(prev => [...prev, { id: `arena-${Date.now()}`, ...data }]);
     };
     const updateArena = (arena: Arena) => {
@@ -320,6 +333,16 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
     const deleteArena = (id: string) => {
         setArenas(prev => prev.filter(a => a.id !== id));
+    };
+    
+    const addSport = (data: { name: string; description: string; }) => {
+        setSports(prev => [...prev, { id: `sport-${Date.now()}`, ...data }]);
+    };
+    const updateSport = (sport: Sport) => {
+        setSports(prev => prev.map(s => s.id === sport.id ? sport : s));
+    };
+    const deleteSport = (id: string) => {
+        setSports(prev => prev.filter(s => s.id !== id));
     };
 
     const addSanction = (data: Omit<Sanction, 'id'>) => {
@@ -332,13 +355,51 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
         setSanctions(prev => prev.filter(s => s.id !== id));
     };
 
-    const addReferee = (data: {name: string}) => setReferees(prev => [...prev, {id: `ref-${Date.now()}`, ...data}]);
-    const updateReferee = (ref: Referee) => setReferees(prev => prev.map(r => r.id === ref.id ? ref : r));
+    const addReferee = (data: Omit<Referee, 'id' | 'photoUrl'> & { photoFile?: File | null }) => {
+        const { photoFile, ...refereeData } = data;
+        const newReferee: Referee = {
+            id: `ref-${Date.now()}`,
+            photoUrl: photoFile ? URL.createObjectURL(photoFile) : `https://avatar.iran.liara.run/username?username=${refereeData.name.replace(/\s/g, '+')}`,
+            ...refereeData
+        };
+        setReferees(prev => [...prev, newReferee]);
+        logAction('Add Referee', `Added referee: ${data.name}`);
+    };
+    
+    const updateReferee = (updatedReferee: Referee, photoFile?: File | null) => {
+        let finalReferee = { ...updatedReferee };
+        if (photoFile) {
+            finalReferee.photoUrl = URL.createObjectURL(photoFile);
+        }
+        setReferees(prev => prev.map(r => r.id === finalReferee.id ? finalReferee : r));
+        logAction('Update Referee', `Updated referee: ${finalReferee.name}`);
+    };
+
     const deleteReferee = (id: string) => setReferees(prev => prev.filter(r => r.id !== id));
 
-    const addObserver = (data: {name: string}) => setObservers(prev => [...prev, {id: `obs-${Date.now()}`, ...data}]);
-    const updateObserver = (obs: Observer) => setObservers(prev => prev.map(o => o.id === obs.id ? obs : o));
-    const deleteObserver = (id: string) => setObservers(prev => prev.filter(o => o.id !== id));
+    const addObserver = (data: Omit<Observer, 'id' | 'photoUrl'> & { photoFile?: File | null }) => {
+        const { photoFile, ...observerData } = data;
+        const newObserver: Observer = {
+            id: `obs-${Date.now()}`,
+            photoUrl: photoFile ? URL.createObjectURL(photoFile) : `https://avatar.iran.liara.run/username?username=${observerData.name.replace(/\s/g, '+')}`,
+            ...observerData
+        };
+        setObservers(prev => [...prev, newObserver]);
+        logAction('Add Observer', `Added observer: ${data.name}`);
+    };
+    const updateObserver = (updatedObserver: Observer, photoFile?: File | null) => {
+        let finalObserver = { ...updatedObserver };
+        if (photoFile) {
+            finalObserver.photoUrl = URL.createObjectURL(photoFile);
+        }
+        setObservers(prev => prev.map(o => o.id === finalObserver.id ? finalObserver : o));
+        logAction('Update Observer', `Updated observer: ${finalObserver.name}`);
+    };
+    const deleteObserver = (id: string) => {
+        const observerName = observers.find(o => o.id === id)?.name || 'Unknown';
+        setObservers(prev => prev.filter(o => o.id !== id));
+        logAction('Delete Observer', `Deleted observer: ${observerName}`);
+    };
 
     const getTransfersByPlayerId = (playerId: string) => transfers.filter(t => t.playerId === playerId);
     const getPlayerRegistrationsByPlayerId = (playerId: string) => playerRegistrations.filter(pr => pr.playerId === playerId);
@@ -568,6 +629,7 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
         invoices, auditLog,
         counties, addCounty, updateCounty, deleteCounty,
         arenas, addArena, updateArena, deleteArena,
+        sports, addSport, updateSport, deleteSport,
         sanctions, addSanction, updateSanction, deleteSanction,
         referees, addReferee, updateReferee, deleteReferee,
         observers, addObserver, updateObserver, deleteObserver,

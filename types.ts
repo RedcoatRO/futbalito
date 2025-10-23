@@ -4,7 +4,8 @@
 export type Page = 
   | 'DASHBOARD' | 'BROWSE' | 'MANAGE_COMPETITIONS' | 'MANAGE_TEAMS' | 'MANAGE_PLAYERS'
   | 'MANAGE_ARENAS' | 'MANAGE_REFEREES' | 'MANAGE_OBSERVERS' | 'MANAGE_ORGANIZERS'
-  | 'MANAGE_NATIONAL_TEAM' | 'PUBLISH' | 'REPORTS' | 'MARKETPLACE' | 'SETTINGS';
+  | 'MANAGE_NATIONAL_TEAM' | 'PUBLISH' | 'REPORTS' | 'MARKETPLACE' | 'SETTINGS'
+  | 'MANAGE_SPORTS';
 
 export type Permission =
   | 'competitions:create' | 'competitions:edit' | 'competitions:delete'
@@ -19,7 +20,8 @@ export type Permission =
   | 'publish:manage_regulations' | 'publish:customize_sites'
   | 'settings:manage_organization' | 'settings:manage_counties'
   | 'users:invite' | 'users:manage_roles'
-  | 'transfers:manage';
+  | 'transfers:manage'
+  | 'sports:manage';
 
 // Core data models
 export interface Team {
@@ -27,6 +29,18 @@ export interface Team {
   name: string;
   country: string;
   logoUrl: string;
+  county?: string;
+  city?: string;
+  address?: string;
+  foundedYear?: number;
+  clubColors?: {
+    primary: string;
+    secondary: string;
+  };
+  president?: string;
+  competitionOrganizer?: string; // User ID
+  coach?: string;
+  status?: 'active' | 'inactive';
 }
 
 export interface Player {
@@ -39,6 +53,15 @@ export interface Player {
     yellowCards: number;
     redCards: number;
   };
+  cnp?: string;
+  dateOfBirth?: string; // ISO string
+  registrationNumber?: string;
+  registrationDate?: string; // ISO string
+  phone?: string;
+  email?: string;
+  status?: 'active' | 'inactive';
+  annualVisas?: string[]; // Array of ISO date strings
+  photoUrl?: string;
 }
 
 export enum MatchEventType {
@@ -97,6 +120,9 @@ export interface Competition {
   isPublic?: boolean;
   county?: string;
   organizerId?: string;
+  sportId?: string;
+  pointsForWin?: number;
+  pointsForTieBreakWin?: number;
   publicConfig?: PublicConfig;
 }
 
@@ -167,16 +193,45 @@ export interface Arena {
     name: string;
     location: string;
     fields: string[];
+    county?: string;
+    fieldDimensions?: string;
+    goalDimensions?: string;
+    hasFloodlights?: boolean;
+    spectatorCapacity?: number;
+    homologationDate?: string; // ISO string
+    homologationExpiration?: string; // ISO string
 }
+
+export interface Sport {
+    id: string;
+    name: string;
+    description: string;
+}
+
+export type RefereeCategory = 'ASPIRANTI' | 'STAGIARI' | 'CATEGORIA 3' | 'CATEGORIA 2' | 'CATEGORIA 1';
 
 export interface Referee {
     id: string;
     name: string;
+    county?: string;
+    city?: string;
+    dateOfBirth?: string; // ISO string
+    phone?: string;
+    email?: string;
+    category?: RefereeCategory;
+    photoUrl?: string;
 }
 
 export interface Observer {
     id: string;
     name: string;
+    county?: string;
+    city?: string;
+    dateOfBirth?: string; // ISO string
+    phone?: string;
+    email?: string;
+    category?: RefereeCategory;
+    photoUrl?: string;
 }
 
 export interface NationalTeam {

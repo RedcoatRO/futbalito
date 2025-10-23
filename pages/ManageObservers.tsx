@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Observer } from '../types.ts';
 import Button from '../components/ui/Button.tsx';
@@ -31,9 +30,11 @@ const ManageObservers: React.FC = () => {
     setEditingObserver(null);
   };
 
-  const handleSave = (data: { name: string; }) => {
+  const handleSave = (data: Omit<Observer, 'id' | 'photoUrl'> & { photoFile?: File | null }) => {
+    const { photoFile, ...observerData } = data;
     if (editingObserver) {
-      updateObserver({ ...editingObserver, ...data });
+      const updatedObserverObject = { ...editingObserver, ...observerData };
+      updateObserver(updatedObserverObject, photoFile);
     } else {
       addObserver(data);
     }
@@ -59,11 +60,25 @@ const ManageObservers: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50"><tr><th className="px-6 py-3 text-left text-xs font-medium uppercase">Name</th>{canManage && <th className="px-6 py-3 text-right text-xs font-medium uppercase">Actions</th>}</tr></thead>
+            <thead className="bg-gray-50">
+                <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">County</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                    {canManage && <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>}
+                </tr>
+            </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {observers.map((observer) => (
                 <tr key={observer.id}>
-                  <td className="px-6 py-4 font-medium">{observer.name}</td>
+                  <td className="px-6 py-4 font-medium">
+                     <div className="flex items-center">
+                        <img src={observer.photoUrl || `https://avatar.iran.liara.run/username?username=${observer.name.replace(/\s/g, '+')}`} alt={observer.name} className="h-10 w-10 rounded-full object-cover mr-4" />
+                        {observer.name}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{observer.county || 'N/A'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{observer.category || 'N/A'}</td>
                   {canManage && (
                     <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
                         <button onClick={() => openEditModal(observer)} className="text-indigo-600 hover:text-indigo-900">Edit</button>

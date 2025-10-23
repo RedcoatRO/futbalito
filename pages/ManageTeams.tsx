@@ -35,9 +35,11 @@ const ManageTeams: React.FC = () => {
     setEditingTeam(null);
   };
 
-  const handleSave = (data: { name: string; country: string; logoFile?: File | null; }) => {
+  const handleSave = (data: Omit<Team, 'id' | 'logoUrl'> & { logoFile?: File | null }) => {
+    const { logoFile, ...teamData } = data;
     if (editingTeam) {
-      updateTeam({ ...editingTeam, ...data });
+      const updatedTeamObject = { ...editingTeam, ...teamData };
+      updateTeam(updatedTeamObject, logoFile);
     } else {
       addTeam(data);
     }
@@ -72,6 +74,8 @@ const ManageTeams: React.FC = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Team</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">County</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 {(hasPermission('teams:edit') || hasPermission('teams:delete')) && (
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 )}
@@ -91,6 +95,14 @@ const ManageTeams: React.FC = () => {
                       </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{team.country}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{team.county}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        team.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                        {team.status === 'active' ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
                   {(hasPermission('teams:edit') || hasPermission('teams:delete')) && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                         {hasPermission('teams:edit') && <button onClick={() => openEditModal(team)} className="text-indigo-600 hover:text-indigo-900">Edit</button>}

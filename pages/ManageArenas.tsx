@@ -37,7 +37,7 @@ const ManageArenas: React.FC = () => {
     setEditingArena(null);
   };
 
-  const handleSave = (data: { name: string; location: string; fields: string[] }) => {
+  const handleSave = (data: Omit<Arena, 'id'>) => {
     if (editingArena) {
       updateArena({ ...editingArena, ...data });
     } else {
@@ -65,13 +65,20 @@ const ManageArenas: React.FC = () => {
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gray-50"><tr><th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th><th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th><th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fields</th>{canManage && <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>}</tr></thead>
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">County</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Capacity</th>
+                {canManage && <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>}
+              </tr>
+            </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {arenas.map((arena) => (
                 <tr key={arena.id}>
                   <td className="px-6 py-4 font-medium">{arena.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{arena.location}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{arena.fields.join(', ')}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{arena.county || 'N/A'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{arena.spectatorCapacity ? arena.spectatorCapacity.toLocaleString() : 'N/A'}</td>
                   {canManage && (
                     <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
                         <button onClick={() => openEditModal(arena)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
