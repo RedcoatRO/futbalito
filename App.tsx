@@ -191,14 +191,17 @@ const App: React.FC = () => {
     };
 
     const renderContent = () => {
-        if (viewingCompetitionId) return <CompetitionDetail competitionId={viewingCompetitionId} onBack={resetViews} onManageLiveMatch={handleManageLiveMatch} />;
+        // More specific views must be checked before their parents to ensure correct navigation.
         if (liveMatchId) return <LiveMatch matchId={liveMatchId} onBack={resetViews} />;
+        if (editingArticle) return <EditArticle competitionId={editingArticle.competitionId} articleId={editingArticle.articleId} onBack={resetViews} />;
+        if (editingGallery) return <EditGallery competitionId={editingGallery.competitionId} galleryId={editingGallery.galleryId} onBack={resetViews} />;
+        
+        // Parent/main detail views
+        if (viewingCompetitionId) return <CompetitionDetail competitionId={viewingCompetitionId} onBack={resetViews} onManageLiveMatch={handleManageLiveMatch} />;
         if (customizingSiteId) return <WebBuilder competitionId={customizingSiteId} onBack={resetViews} />;
         if (customizingPortal) return <PortalBuilder onBack={resetViews} />;
         if (managingArticlesId) return <ManageArticles competitionId={managingArticlesId} onBack={resetViews} onCreateArticle={handleCreateArticle} onEditArticle={handleEditArticle}/>;
-        if (editingArticle) return <EditArticle competitionId={editingArticle.competitionId} articleId={editingArticle.articleId} onBack={resetViews} />;
         if (managingMediaId) return <ManageMedia competitionId={managingMediaId} onBack={resetViews} onCreateGallery={handleCreateGallery} onEditGallery={handleEditGallery} />;
-        if (editingGallery) return <EditGallery competitionId={editingGallery.competitionId} galleryId={editingGallery.galleryId} onBack={resetViews} />;
         if (managingSponsorsId) return <ManageSponsors competitionId={managingSponsorsId} onBack={resetViews} />;
         if (managingRegulationsId) return <ManageRegulations competitionId={managingRegulationsId} onBack={resetViews} />;
         if (viewingPlayerId) return <PlayerDetail playerId={viewingPlayerId} onBack={resetViews} />;

@@ -6,7 +6,7 @@ import { MatchEventType } from '../types.ts';
 import Button from '../components/ui/Button.tsx';
 import Modal from '../components/ui/Modal.tsx';
 import EventForm from '../components/EventForm.tsx';
-import { ChevronLeftIcon, PlayIcon, PauseIcon, ArrowPathIcon } from '../components/icons/Icons.tsx';
+import { ChevronLeftIcon, PlayIcon, PauseIcon, ArrowPathIcon, XMarkIcon } from '../components/icons/Icons.tsx';
 
 interface LiveMatchProps {
     matchId: string;
@@ -72,6 +72,46 @@ const LiveMatch: React.FC<LiveMatchProps> = ({ matchId, onBack }) => {
         setIsEventModalOpen(false);
         setEventDefaults(null);
     };
+
+    const handleDeleteEvent = (eventId: string) => {
+        if (!match) return;
+
+        const eventToDelete = match.events.find(e => e.id === eventId);
+        if (!eventToDelete) return;
+        
+        if (window.confirm(`Are you sure you want to delete this event: ${eventToDelete.type} at ${eventToDelete.minute}'?`)) {
+            const updatedMatch = { ...match };
+
+            // If it was a goal, decrement the score
+            if (eventToDelete.type === MatchEventType.GOAL) {
+                if (eventToDelete.teamId === match.homeTeam.id) {
+                    updatedMatch.homeScore = Math.max(0, updatedMatch.homeScore - 1);
+                } else {
+                    updatedMatch.awayScore = Math.max(0, updatedMatch.awayScore - 1);
+                }
+            }
+
+            // Remove the event
+            updatedMatch.events = match.events.filter(e => e.id !== eventId);
+
+            updateMatch(updatedMatch);
+            setMatch(updatedMatch);
+        }
+    };
+
+    const handleResetScore = () => {
+        if (!match) return;
+        if (window.confirm('Are you sure you want to reset the score to 0-0 and remove all goal events? This action cannot be undone.')) {
+            const updatedMatch = {
+                ...match,
+                homeScore: 0,
+                awayScore: 0,
+                events: match.events.filter(e => e.type !== MatchEventType.GOAL)
+            };
+            updateMatch(updatedMatch);
+            setMatch(updatedMatch);
+        }
+    };
     
     const openEventModal = (type: MatchEventType, teamId: string) => {
         setEventDefaults({ type, teamId });
@@ -123,6 +163,7 @@ const LiveMatch: React.FC<LiveMatchProps> = ({ matchId, onBack }) => {
                            )}
                            <Button onClick={handleReset} variant="outline" className="flex-1"><ArrowPathIcon className="h-5 w-5 mr-1"/>Reset</Button>
                         </div>
+                        <Button onClick={handleResetScore} variant="danger" className="w-full mt-2">Reset Score</Button>
                     </div>
                     <div className="bg-white rounded-lg shadow p-4">
                         <h3 className="font-bold mb-3 text-center">{match.homeTeam.name}</h3>
@@ -149,19 +190,27 @@ const LiveMatch: React.FC<LiveMatchProps> = ({ matchId, onBack }) => {
                     <h3 className="font-bold mb-3 text-xl">Match Events</h3>
                     <ul className="divide-y divide-gray-200">
                         {matchEvents.map(event => (
-                            <li key={event.id} className="py-3 flex items-center">
-                                <span className="font-bold text-lg w-12">{event.minute}'</span>
-                                <div>
-                                    <p className="font-semibold">{event.type}</p>
-                                    <p className="text-sm text-gray-600">
-                                        {event.type === MatchEventType.SUBSTITUTION 
-                                            ? `${getPlayerName(event.primaryPlayerId)} out, ${getPlayerName(event.secondaryPlayerId!)} in` 
-                                            : getPlayerName(event.primaryPlayerId)}
-                                        ({event.teamId === match.homeTeam.id ? match.homeTeam.name : match.awayTeam.name})
-                                    </p>
+                            <li key={event.id} className="py-3 flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <span className="font-bold text-lg w-12">{event.minute}'</span>
+                                    <div>
+                                        <p className="font-semibold">{event.type}</p>
+                                        <p className="text-sm text-gray-600">
+                                            {event.type === MatchEventType.SUBSTITUTION 
+                                                ? `${getPlayerName(event.primaryPlayerId)} out, ${getPlayerName(event.secondaryPlayerId!)} in` 
+                                                : getPlayerName(event.primaryPlayerId)}
+                                            ({event.teamId === match.homeTeam.id ? match.homeTeam.name : match.awayTeam.name})
+                                        </p>
+                                    </div>
                                 </div>
+                                <Button size="sm" variant="danger" onClick={() => handleDeleteEvent(event.id)}>
+                                    <XMarkIcon className="h-4 w-4" />
+                                </Button>
                             </li>
                         ))}
+                         {matchEvents.length === 0 && (
+                            <p className="text-center text-gray-500 py-8">No events have been recorded yet.</p>
+                        )}
                     </ul>
                 </div>
             </div>
