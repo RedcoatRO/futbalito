@@ -1,12 +1,12 @@
 
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 // FIX: Added .ts extension to module import.
-import type { Competition } from '../types.ts';
+import type { Competition, Team } from '../types.ts';
 // FIX: Added .tsx extension to module import to resolve module resolution error.
 import Button from './ui/Button.tsx';
 // FIX: Added .tsx extension to module import.
 import { useCompetitions } from '../context/CompetitionContext.tsx';
+import { PlusIcon, XMarkIcon } from './icons/Icons.tsx';
 
 interface CompetitionFormProps {
   competition?: Competition | null;
@@ -23,7 +23,7 @@ const romanianCounties = [
 ];
 
 const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, onClose }) => {
-  const { arenas, users, sports } = useCompetitions();
+  const { arenas, users, sports, teams } = useCompetitions();
   const [name, setName] = useState('');
   const [season, setSeason] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -39,6 +39,7 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
   const [sportId, setSportId] = useState<string | undefined>(undefined);
   const [pointsForWin, setPointsForWin] = useState<number>(3);
   const [pointsForTieBreakWin, setPointsForTieBreakWin] = useState<number>(2);
+  const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([]);
 
 
   useEffect(() => {
@@ -56,8 +57,10 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
       setSportId(competition.sportId);
       setPointsForWin(competition.pointsForWin ?? 3);
       setPointsForTieBreakWin(competition.pointsForTieBreakWin ?? 2);
+      setSelectedTeamIds(competition.teamIds || []);
     } else {
       setName(''); setSeason(''); setPreviewUrl(null); setFormat('league'); setTwoLegged(false); setTeamsPerGroup(4); setDefaultArenaId(undefined); setIsPublic(false); setCounty(undefined); setOrganizerId(undefined); setSportId(undefined); setPointsForWin(3); setPointsForTieBreakWin(2);
+      setSelectedTeamIds([]);
     }
     setLogoFile(null); setError('');
   }, [competition]);
@@ -70,18 +73,36 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
     }
   };
 
+  const availableTeams = useMemo(() => {
+    const teamsInCounty = county ? teams.filter(t => t.county === county) : teams;
+    return teamsInCounty.filter(t => !selectedTeamIds.includes(t.id));
+  }, [teams, county, selectedTeamIds]);
+
+  const selectedTeams = useMemo(() => {
+    return selectedTeamIds.map(id => teams.find(t => t.id === id)).filter((t): t is Team => !!t);
+  }, [selectedTeamIds, teams]);
+  
+  const handleAddTeam = (teamId: string) => {
+    setSelectedTeamIds(prev => [...prev, teamId]);
+  };
+  
+  const handleRemoveTeam = (teamId: string) => {
+    setSelectedTeamIds(prev => prev.filter(id => id !== teamId));
+  };
+
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !season.trim()) {
       setError('Name and season are required.');
       return;
     }
-    onSave({ name, season, logoFile, format, twoLegged, teamsPerGroup, defaultArenaId, isPublic, county, organizerId, sportId, pointsForWin, pointsForTieBreakWin });
+    onSave({ name, season, logoFile, format, twoLegged, teamsPerGroup, defaultArenaId, isPublic, county, organizerId, sportId, pointsForWin, pointsForTieBreakWin, teamIds: selectedTeamIds });
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+      <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
         <div>
           <label className="block text-sm font-medium text-gray-700">Logo</label>
           <div className="mt-1 flex items-center space-x-4">
@@ -96,7 +117,7 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
             <div>
               <label htmlFor="county" className="block text-sm font-medium text-gray-700">County / Region</label>
               <select id="county" value={county || ''} onChange={e => setCounty(e.target.value || undefined)} className="mt-1 block w-full border rounded-md p-2">
-                  <option value="">None</option>
+                  <option value="">None (Show all teams)</option>
                   {romanianCounties.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -139,6 +160,60 @@ const CompetitionForm: React.FC<CompetitionFormProps> = ({ competition, onSave, 
         {format === 'league' && <div className="flex items-center"><input id="twoLegged" type="checkbox" checked={twoLegged} onChange={(e) => setTwoLegged(e.target.checked)} className="h-4 w-4 rounded" /><label htmlFor="twoLegged" className="ml-2">Two-legged matches</label></div>}
         {format === 'mixed' && (<div className="space-y-4 p-4 bg-gray-50 rounded-md"><div><label htmlFor="teamsPerGroup" className="block text-sm font-medium">Teams per group</label><input type="number" id="teamsPerGroup" value={teamsPerGroup} onChange={(e) => setTeamsPerGroup(parseInt(e.target.value, 10) || 0)} className="mt-1 w-full border rounded-md p-2" min="2"/></div><div className="flex items-center"><input id="twoLeggedGroups" type="checkbox" checked={twoLegged} onChange={(e) => setTwoLegged(e.target.checked)} className="h-4 w-4 rounded" /><label htmlFor="twoLeggedGroups" className="ml-2">Two-legged matches in groups</label></div></div>)}
         <hr />
+        
+        <div>
+          <h3 className="text-lg font-medium text-gray-800 mb-2">Manage Teams</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Available teams are filtered by the selected county. If no county is selected, all teams are shown.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Available Teams ({availableTeams.length})</label>
+              <div className="mt-1 border rounded-md p-2 h-64 overflow-y-auto bg-gray-50">
+                {availableTeams.length > 0 ? (
+                  <ul className="divide-y divide-gray-200">
+                    {availableTeams.map(team => (
+                      <li key={team.id} className="py-2 flex items-center justify-between">
+                        <div className="flex items-center">
+                          <img src={team.logoUrl} alt={team.name} className="h-8 w-8 rounded-full object-cover mr-3" />
+                          <span className="text-sm font-medium">{team.name}</span>
+                        </div>
+                        <Button type="button" size="sm" variant="outline" onClick={() => handleAddTeam(team.id)}>
+                           <PlusIcon className="h-4 w-4" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-center text-sm text-gray-500 pt-8">No available teams match the criteria.</p>
+                )}
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Selected Teams ({selectedTeams.length})</label>
+              <div className="mt-1 border rounded-md p-2 h-64 overflow-y-auto">
+                {selectedTeams.length > 0 ? (
+                  <ul className="divide-y divide-gray-200">
+                    {selectedTeams.map(team => (
+                      <li key={team.id} className="py-2 flex items-center justify-between">
+                         <div className="flex items-center">
+                          <img src={team.logoUrl} alt={team.name} className="h-8 w-8 rounded-full object-cover mr-3" />
+                          <span className="text-sm font-medium">{team.name}</span>
+                        </div>
+                        <Button type="button" size="sm" variant="danger" onClick={() => handleRemoveTeam(team.id)}>
+                          <XMarkIcon className="h-4 w-4" />
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                    <p className="text-center text-sm text-gray-500 pt-8">No teams selected.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
          <div className="flex items-center">
             <input id="isPublic" type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} className="h-4 w-4 rounded" />
             <label htmlFor="isPublic" className="ml-2 text-sm font-medium text-gray-700">Make this competition public on the main portal</label>

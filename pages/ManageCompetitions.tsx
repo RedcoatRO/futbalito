@@ -42,7 +42,7 @@ const ManageCompetitions: React.FC<ManageCompetitionsProps> = ({setPage, onViewC
     setEditingCompetition(null);
   };
 
-  const handleSave = (data: Omit<Competition, 'id' | 'logoUrl' | 'status' | 'teamIds'> & { logoFile?: File | null }) => {
+  const handleSave = (data: Omit<Competition, 'id' | 'logoUrl' | 'status'> & { logoFile?: File | null }) => {
     if (editingCompetition) {
       updateCompetition({ ...editingCompetition, ...data });
     } else {

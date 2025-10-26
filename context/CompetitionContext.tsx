@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { 
     Team, Competition, Match, Player, OrganizationSettings, User, Role,
@@ -22,7 +23,7 @@ interface CompetitionContextType {
     deleteTeam: (id: string) => void;
     competitions: Competition[];
     getCompetitionById: (id: string) => Competition | undefined;
-    addCompetition: (data: Omit<Competition, 'id' | 'logoUrl' | 'status' | 'teamIds'> & { logoFile?: File | null }) => void;
+    addCompetition: (data: Omit<Competition, 'id' | 'logoUrl' | 'status'> & { logoFile?: File | null }) => void;
     updateCompetition: (competition: Competition) => void;
     deleteCompetition: (id: string) => void;
     addTeamToCompetition: (competitionId: string, teamId: string) => void;
@@ -196,14 +197,14 @@ export const CompetitionProvider: React.FC<{ children: ReactNode }> = ({ childre
         logAction('Delete Team', `Deleted team: ${teamName} (ID: ${id})`);
     };
 
-    const addCompetition = (data: Omit<Competition, 'id' | 'logoUrl' | 'status' | 'teamIds'> & { logoFile?: File | null }) => {
+    const addCompetition = (data: Omit<Competition, 'id' | 'logoUrl' | 'status'> & { logoFile?: File | null }) => {
         const { logoFile, ...rest } = data;
         const newComp: Competition = {
             id: `comp-${Date.now()}`,
             logoUrl: logoFile ? URL.createObjectURL(logoFile) : `https://picsum.photos/seed/${data.name}/200`,
             status: 'Upcoming',
-            teamIds: [],
-            ...rest
+            ...rest,
+            teamIds: data.teamIds || [],
         };
         setCompetitions(prev => [...prev, newComp]);
         logAction('Create Competition', `Created competition: ${data.name}`);
